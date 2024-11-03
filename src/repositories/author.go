@@ -13,3 +13,8 @@ type AuthorRepository interface {
 type authorRepository struct {
 	db *gorm.DB
 }
+
+func NewAuthorRepository(db *gorm.DB) authorRepository {
+	return authorRepository{db}
+}
+
