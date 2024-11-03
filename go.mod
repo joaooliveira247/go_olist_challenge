@@ -1,6 +1,6 @@
 module github.com/joaooliveira247/go_olist_challenge
 
-go 1.22.2
+go 1.22.5
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2 // indirect
