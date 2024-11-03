@@ -18,3 +18,12 @@ func NewAuthorRepository(db *gorm.DB) authorRepository {
 	return authorRepository{db}
 }
 
+func (repository *authorRepository) Create(author *models.Author) (uuid.UUID, error) {
+	result := repository.db.Create(&author)
+
+	if err := result.Error; err != nil {
+		return uuid.UUID{}, err
+	}
+
+	return author.ID, nil
+}
