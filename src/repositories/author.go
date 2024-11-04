@@ -27,3 +27,19 @@ func (repository *authorRepository) Create(author *models.Author) (uuid.UUID, er
 
 	return author.ID, nil
 }
+
+func (repository *authorRepository) CreateMany(authors *[]models.Author) ([]uuid.UUID, error) {
+	result := repository.db.Create(&authors)
+
+	if err := result.Error; err != nil {
+		return nil, err
+	}
+
+	var authorsIDs []uuid.UUID
+
+	for _, author := range *authors {
+		authorsIDs = append(authorsIDs, author.ID)
+	}
+
+	return authorsIDs, nil
+}
