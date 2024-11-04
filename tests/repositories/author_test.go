@@ -80,7 +80,7 @@ func TestCreateNotExpectedError(t *testing.T) {
 	assert.Equal(t, uuid.Nil, id)
 }
 
-func TestCreateMany(t *testing.T) {
+func TestCreateManySuccess(t *testing.T) {
 	gormDB, mock := SetupMockDB()
 
 	defer func() {
