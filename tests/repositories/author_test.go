@@ -3,6 +3,7 @@ package repositories_test
 import (
 	"errors"
 	"log"
+	"regexp"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -43,7 +44,7 @@ func TestCreateSuccess(t *testing.T) {
 	}
 
 	mock.ExpectBegin()
-	mock.ExpectQuery(`INSERT INTO "authors" \("name"\) VALUES \(\$1\) RETURNING "id"`).
+	mock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO "authors" ("name") VALUES ($1) RETURNING "id"`)).
 		WithArgs(author.Name).
 		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(expectedID))
 	mock.ExpectCommit()
@@ -70,7 +71,7 @@ func TestCreateNotExpectedError(t *testing.T) {
 		Name: "Luciano Ramalho",
 	}
 	mock.ExpectBegin()
-	mock.ExpectQuery(`INSERT INTO "authors" \("name"\) VALUES \(\$1\) RETURNING "id"`).WithArgs(author.Name).WillReturnError(errors.New("some error not mapped"))
+	mock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO "authors" ("name") VALUES ($1) RETURNING "id"`)).WithArgs(author.Name).WillReturnError(errors.New("some error not mapped"))
 	mock.ExpectRollback()
 
 	id, err := repository.Create(author)
