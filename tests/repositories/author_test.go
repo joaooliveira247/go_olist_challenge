@@ -115,3 +115,30 @@ func TestCreateManySuccess(t *testing.T) {
 	assert.Equal(t, ids[1], authors[1].ID)
 	t.Logf("Author IDs: %v, %v", authors[0].ID, authors[1].ID)
 }
+
+func TestCreateManyNotExpectedError(t *testing.T) {
+	gormDB, mock := SetupMockDB()
+
+	defer func() {
+		db, _ := gormDB.DB()
+		db.Close()
+	}()
+
+	repository := repositories.NewAuthorRepository(gormDB)
+
+	authors := []models.Author{
+		{Name: "J. K. Rowling"},
+		{Name: "Stephen King"},
+	}
+
+	mock.ExpectBegin()
+	mock.ExpectQuery(regexp.QuoteMeta(
+		`INSERT INTO "authors" ("name") VALUES ($1),($2) RETURNING "id"`),
+	).WithArgs(authors[0].Name, authors[1].Name).WillReturnError(errors.New("some error not mapped"))
+	mock.ExpectCommit()
+
+	ids, err := repository.CreateMany(&authors)
+
+	assert.Nil(t, ids)
+	assert.Error(t, err, "some error not mapped")
+}
