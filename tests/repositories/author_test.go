@@ -142,3 +142,32 @@ func TestCreateManyNotExpectedError(t *testing.T) {
 	assert.Nil(t, ids)
 	assert.Error(t, err, "some error not mapped")
 }
+
+func TestGetAllSuccess(t *testing.T) {
+	gormDB, mock := SetupMockDB()
+
+	defer func() {
+		db, _ := gormDB.DB()
+		db.Close()
+	}()
+
+	repository := repositories.NewAuthorRepository(gormDB)
+
+	authors := []models.Author{
+		{Name: "J. K. Rowling"},
+		{Name: "Stephen King"},
+		{Name: "Luciano Ramalho"},
+	}
+
+	rows := mock.NewRows([]string{"id", "name"}).
+		AddRow(uuid.New(), authors[0].Name).
+		AddRow(uuid.New(), authors[1].Name).
+		AddRow(uuid.New(), authors[2].Name)
+
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * from "authors"`)).WillReturnRows(rows)
+
+	results, err := repository.GetAll()
+
+	assert.Nil(t, err)
+	assert.Len(t, results, 3)
+}
