@@ -1,6 +1,7 @@
 package repositories_test
 
 import (
+	"errors"
 	"log"
 	"testing"
 
@@ -53,4 +54,27 @@ func TestCreateSuccess(t *testing.T) {
 	assert.Equal(t, expectedID, id)
 
 	assert.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestCreateNotExpectedError(t *testing.T) {
+	gormDB, mock := SetupMockDB()
+
+	defer func() {
+		db, _ := gormDB.DB()
+		db.Close()
+	}()
+
+	repository := repositories.NewAuthorRepository(gormDB)
+
+	author := &models.Author{
+		Name: "Luciano Ramalho",
+	}
+	mock.ExpectBegin()
+	mock.ExpectQuery(`INSERT INTO "authors" \("name"\) VALUES \(\$1\) RETURNING "id"`).WithArgs(author.Name).WillReturnError(errors.New("some error not mapped"))
+	mock.ExpectRollback()
+
+	id, err := repository.Create(author)
+
+	assert.Error(t, err, "some error not mapped")
+	assert.Equal(t, uuid.Nil, id)
 }
