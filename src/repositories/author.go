@@ -9,6 +9,7 @@ import (
 type AuthorRepository interface {
 	Create(author *models.Author) (uuid.UUID, error)
 	CreateMany(authors *[]models.Author) ([]uuid.UUID, error)
+	GetAll() ([]models.Author, error)
 }
 
 type authorRepository struct {
