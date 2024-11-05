@@ -43,3 +43,15 @@ func (repository *authorRepository) CreateMany(authors *[]models.Author) ([]uuid
 
 	return authorsIDs, nil
 }
+
+func (repository *authorRepository) GetAll() ([]models.Author, error) {
+	var authors []models.Author
+
+	result := repository.db.Find(&authors)
+
+	if err := result.Error; err != nil {
+		return nil, err
+	}
+
+	return authors, nil
+}
