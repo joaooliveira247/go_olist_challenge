@@ -212,3 +212,23 @@ func TestGetByIDSuccess(t *testing.T) {
 	assert.Equal(t, expectedID, result.ID)
 	assert.Nil(t, err)
 }
+
+func TestGetByIDNotExpectedError(t *testing.T) {
+	gormDB, mock := SetupMockDB()
+
+	defer func() {
+		db, _ := gormDB.DB()
+		db.Close()
+	}()
+
+	repository := repositories.NewAuthorRepository(gormDB)
+
+	expectedID := uuid.New()
+
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "authors" WHERE id = $1 ORDER BY "authors"."id" LIMIT $2`)).WithArgs(expectedID, 1).WillReturnError(errors.New("some error not mapped"))
+
+	result, err := repository.GetByID(expectedID)
+
+	assert.Error(t, err, "some error not mapped")
+	assert.Equal(t, models.Author{}, result)
+}
