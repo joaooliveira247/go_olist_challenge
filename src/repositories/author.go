@@ -57,3 +57,15 @@ func (repository *authorRepository) GetAll() ([]models.Author, error) {
 
 	return authors, nil
 }
+
+func (repository *authorRepository) GetByID(id uuid.UUID) (models.Author, error) {
+	var author models.Author
+
+	result := repository.db.First(&author, "id = ?", id)
+
+	if err := result.Error; err != nil {
+		return models.Author{}, err
+	}
+
+	return author, nil
+}
