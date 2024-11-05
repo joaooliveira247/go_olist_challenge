@@ -171,3 +171,21 @@ func TestGetAllSuccess(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Len(t, results, 3)
 }
+
+func TestGetAllNotExpectedError(t *testing.T) {
+	gormDB, mock := SetupMockDB()
+
+	defer func() {
+		db, _ := gormDB.DB()
+		db.Close()
+	}()
+
+	repository := repositories.NewAuthorRepository(gormDB)
+
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "authors"`)).WillReturnError(errors.New("some error not mapped"))
+
+	results, err := repository.GetAll()
+
+	assert.Nil(t, results)
+	assert.Error(t, err, "some error not mapped")
+}
