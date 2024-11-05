@@ -8,6 +8,7 @@ import (
 
 type AuthorRepository interface {
 	Create(author *models.Author) (uuid.UUID, error)
+	CreateMany(authors *[]models.Author) ([]uuid.UUID, error)
 }
 
 type authorRepository struct {
