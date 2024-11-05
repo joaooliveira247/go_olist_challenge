@@ -164,7 +164,7 @@ func TestGetAllSuccess(t *testing.T) {
 		AddRow(uuid.New(), authors[1].Name).
 		AddRow(uuid.New(), authors[2].Name)
 
-	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * from "authors"`)).WillReturnRows(rows)
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "authors"`)).WillReturnRows(rows)
 
 	results, err := repository.GetAll()
 
