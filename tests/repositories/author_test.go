@@ -291,3 +291,24 @@ func TestDeleteSuccess(t *testing.T) {
 
 	assert.Error(t, err)
 }
+
+func TestDeleteNotExpectedError(t *testing.T) {
+	gormDB, mock := SetupMockDB()
+
+	defer func() {
+		db, _ := gormDB.DB()
+		db.Close()
+	}()
+
+	expectedID := uuid.New()
+
+	mock.ExpectBegin()
+	mock.ExpectQuery(regexp.QuoteMeta(`DELETE FROM "authors" WHERE id = $1`)).WithArgs(expectedID).WillReturnError(errors.New("some error not mapped"))
+	mock.ExpectRollback()
+
+	repository := repositories.NewAuthorRepository(gormDB)
+
+	err := repository.Delete(expectedID)
+
+	assert.Error(t, err)
+}
