@@ -270,3 +270,24 @@ func TestGetByNameNotExpectedError(t *testing.T) {
 	assert.Error(t, err)
 	assert.Nil(t, result)
 }
+
+func TestDeleteSuccess(t *testing.T) {
+	gormDB, mock := SetupMockDB()
+
+	defer func() {
+		db, _ := gormDB.DB()
+		db.Close()
+	}()
+
+	expectedID := uuid.New()
+
+	mock.ExpectBegin()
+	mock.ExpectQuery(regexp.QuoteMeta(`DELETE FROM "authors" WHERE id = $1`)).WithArgs(expectedID)
+	mock.ExpectCommit()
+
+	repository := repositories.NewAuthorRepository(gormDB)
+
+	err := repository.Delete(expectedID)
+
+	assert.Error(t, err)
+}
