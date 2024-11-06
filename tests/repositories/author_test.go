@@ -232,3 +232,23 @@ func TestGetByIDNotExpectedError(t *testing.T) {
 	assert.Error(t, err, "some error not mapped")
 	assert.Equal(t, models.Author{}, result)
 }
+
+func TestGetByNameSuccess(t *testing.T) {
+	gormDB, mock := SetupMockDB()
+
+	defer func() {
+		db, _ := gormDB.DB()
+		db.Close()
+	}()
+
+	rows := mock.NewRows([]string{"id", "name"}).AddRow(uuid.New(), "Luciano Ramalho").AddRow(uuid.New(), "Luciano Peres")
+
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "authors" WHERE name LIKE $1`)).WithArgs("%Luciano%").WillReturnRows(rows)
+
+	repository := repositories.NewAuthorRepository(gormDB)
+
+	result, err := repository.GetByName("Luciano")
+
+	assert.Nil(t, err)
+	assert.Len(t, result, 2)
+}
