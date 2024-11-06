@@ -83,3 +83,13 @@ func (repository *authorRepository) GetByName(name string) ([]models.Author, err
 
 	return authors, nil
 }
+
+func (repository *authorRepository) Delete(id uuid.UUID) error {
+	result := repository.db.Delete(models.Author{}, id)
+
+	if err := result.Error; err != nil {
+		return err
+	}
+
+	return nil
+}
