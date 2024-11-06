@@ -261,7 +261,7 @@ func TestGetByNameNotExpectedError(t *testing.T) {
 		db.Close()
 	}()
 
-	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "authors WHERE name like $1"`)).WithArgs("%Luciano%").WillReturnError(errors.New("some error not mapped"))
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "authors" WHERE name like $1"`)).WithArgs("%Luciano%").WillReturnError(errors.New("some error not mapped"))
 
 	repository := repositories.NewAuthorRepository(gormDB)
 
