@@ -252,3 +252,21 @@ func TestGetByNameSuccess(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Len(t, result, 2)
 }
+
+func TestGetByNameNotExpectedError(t *testing.T) {
+	gormDB, mock := SetupMockDB()
+
+	defer func() {
+		db, _ := gormDB.DB()
+		db.Close()
+	}()
+
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "authors WHERE name like $1"`)).WithArgs("%Luciano%").WillReturnError(errors.New("some error not mapped"))
+
+	repository := repositories.NewAuthorRepository(gormDB)
+
+	result, err := repository.GetByName("Luciano")
+
+	assert.Error(t, err)
+	assert.Nil(t, result)
+}
