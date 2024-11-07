@@ -141,6 +141,7 @@ func TestCreateManyNotExpectedError(t *testing.T) {
 	ids, err := repository.CreateMany(&authors)
 
 	assert.Nil(t, ids)
+	assert.ErrorIs(t, err, &errors.AuthorGenericError)
 	assert.Error(t, err, "some error not mapped")
 }
 
