@@ -1,13 +1,13 @@
 package repositories_test
 
 import (
-	"errors"
 	"log"
 	"regexp"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/google/uuid"
+	"github.com/joaooliveira247/go_olist_challenge/src/errors"
 	"github.com/joaooliveira247/go_olist_challenge/src/models"
 	"github.com/joaooliveira247/go_olist_challenge/src/repositories"
 	"github.com/stretchr/testify/assert"
@@ -71,12 +71,13 @@ func TestCreateNotExpectedError(t *testing.T) {
 		Name: "Luciano Ramalho",
 	}
 	mock.ExpectBegin()
-	mock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO "authors" ("name") VALUES ($1) RETURNING "id"`)).WithArgs(author.Name).WillReturnError(errors.New("some error not mapped"))
+	mock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO "authors" ("name") VALUES ($1) RETURNING "id"`)).WithArgs(author.Name).WillReturnError(&errors.AuthorGenericError)
 	mock.ExpectRollback()
 
 	id, err := repository.Create(author)
 
-	assert.Error(t, err, "some error not mapped")
+	assert.Error(t, err)
+	assert.ErrorIs(t, err, &errors.AuthorGenericError)
 	assert.Equal(t, uuid.Nil, id)
 }
 
