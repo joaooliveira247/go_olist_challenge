@@ -135,7 +135,7 @@ func TestCreateManyNotExpectedError(t *testing.T) {
 	mock.ExpectBegin()
 	mock.ExpectQuery(regexp.QuoteMeta(
 		`INSERT INTO "authors" ("name") VALUES ($1),($2) RETURNING "id"`),
-	).WithArgs(authors[0].Name, authors[1].Name).WillReturnError(errors.New("some error not mapped"))
+	).WithArgs(authors[0].Name, authors[1].Name).WillReturnError(&errors.AuthorGenericError)
 	mock.ExpectCommit()
 
 	ids, err := repository.CreateMany(&authors)
