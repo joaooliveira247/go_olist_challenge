@@ -184,12 +184,13 @@ func TestGetAllNotExpectedError(t *testing.T) {
 
 	repository := repositories.NewAuthorRepository(gormDB)
 
-	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "authors"`)).WillReturnError(errors.New("some error not mapped"))
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "authors"`)).WillReturnError(&errors.AuthorGenericError)
 
 	results, err := repository.GetAll()
 
 	assert.Nil(t, results)
-	assert.Error(t, err, "some error not mapped")
+	assert.Error(t, err)
+	assert.ErrorIs(t, err, &errors.AuthorGenericError)
 }
 
 func TestGetByIDSuccess(t *testing.T) {
