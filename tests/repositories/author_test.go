@@ -308,7 +308,7 @@ func TestDeleteNotExpectedError(t *testing.T) {
 	expectedID := uuid.New()
 
 	mock.ExpectBegin()
-	mock.ExpectQuery(regexp.QuoteMeta(`DELETE FROM "authors" WHERE id = $1`)).WithArgs(expectedID).WillReturnError(&errors.AuthorGenericError)
+	mock.ExpectExec(regexp.QuoteMeta(`DELETE FROM "authors" WHERE "authors"."id" = $1`)).WithArgs(expectedID).WillReturnError(&errors.AuthorGenericError)
 	mock.ExpectRollback()
 
 	repository := repositories.NewAuthorRepository(gormDB)
