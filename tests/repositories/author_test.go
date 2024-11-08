@@ -57,6 +57,27 @@ func TestCreateSuccess(t *testing.T) {
 	assert.NoError(t, mock.ExpectationsWereMet())
 }
 
+func TestCreateAlreadyExistsError(t *testing.T) {
+	gormDB, mock := SetupMockDB()
+
+	defer func() {
+		db, _ := gormDB.DB()
+		db.Close()
+	}()
+
+	mock.ExpectBegin()
+	mock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO "authors" ("name") VALUES ($1) RETURNING "id"`)).WithArgs("Luciano Ramalho").WillReturnError(gorm.ErrDuplicatedKey)
+	mock.ExpectRollback()
+
+	repository := repositories.NewAuthorRepository(gormDB)
+
+	id, err := repository.Create(&models.Author{Name: "Luciano Ramalho"})
+
+	assert.Equal(t, uuid.Nil, id)
+	assert.Error(t, err)
+	assert.ErrorIs(t, err, &errors.AuthorAlreadyExists)
+}
+
 func TestCreateNotExpectedError(t *testing.T) {
 	gormDB, mock := SetupMockDB()
 
