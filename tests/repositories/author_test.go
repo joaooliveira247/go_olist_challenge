@@ -378,3 +378,27 @@ func TestDeleteNotExpectedError(t *testing.T) {
 	assert.Error(t, err)
 	assert.ErrorIs(t, err, &errors.AuthorGenericError)
 }
+
+func TestDeleteNotFoundError(t *testing.T) {
+	gormDB, mock := SetupMockDB()
+
+	defer func() {
+		db, _ := gormDB.DB()
+		db.Close()
+	}()
+
+	expectedID := uuid.New()
+
+	mock.ExpectBegin()
+	mock.ExpectExec(regexp.QuoteMeta(`DELETE FROM "authors" WHERE "authors"."id" = $1`)).
+		WithArgs(expectedID).
+		WillReturnResult(sqlmock.NewResult(0, 0))
+	mock.ExpectCommit()
+
+	repository := repositories.NewAuthorRepository(gormDB)
+
+	err := repository.Delete(expectedID)
+
+	assert.Error(t, err)
+	assert.ErrorIs(t, err, &errors.AuthorNotFound)
+}
