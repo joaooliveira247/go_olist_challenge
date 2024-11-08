@@ -299,6 +299,24 @@ func TestGetByNameSuccess(t *testing.T) {
 	assert.Len(t, result, 2)
 }
 
+func TestGetByNameEmptySlice(t *testing.T) {
+	gormDB, mock := SetupMockDB()
+
+	defer func() {
+		db, _ := gormDB.DB()
+		db.Close()
+	}()
+
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "authors" WHERE name LIKE $1`)).WithArgs("%Test%").WillReturnRows(mock.NewRows([]string{"id", "name"}))
+
+	repository := repositories.NewAuthorRepository(gormDB)
+
+	authors, err := repository.GetByName("Test")
+
+	assert.Nil(t, err)
+	assert.Len(t, authors, 0)
+}
+
 func TestGetByNameNotExpectedError(t *testing.T) {
 	gormDB, mock := SetupMockDB()
 
