@@ -136,7 +136,7 @@ func TestCreateManyNotExpectedError(t *testing.T) {
 	mock.ExpectQuery(regexp.QuoteMeta(
 		`INSERT INTO "authors" ("name") VALUES ($1),($2) RETURNING "id"`),
 	).WithArgs(authors[0].Name, authors[1].Name).WillReturnError(&errors.AuthorGenericError)
-	mock.ExpectCommit()
+	mock.ExpectRollback()
 
 	ids, err := repository.CreateMany(&authors)
 
@@ -294,7 +294,7 @@ func TestDeleteSuccess(t *testing.T) {
 
 	err := repository.Delete(expectedID)
 
-	assert.Error(t, err)
+	assert.Nil(t, err)
 }
 
 func TestDeleteNotExpectedError(t *testing.T) {
