@@ -1,9 +1,11 @@
 package repositories
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/google/uuid"
+	custom "github.com/joaooliveira247/go_olist_challenge/src/errors"
 	"github.com/joaooliveira247/go_olist_challenge/src/models"
 	"gorm.io/gorm"
 )
@@ -26,6 +28,9 @@ func (repository *authorRepository) Create(author *models.Author) (uuid.UUID, er
 	result := repository.db.Create(&author)
 
 	if err := result.Error; err != nil {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			return uuid.UUID{}, &custom.AuthorAlreadyExists
+		}
 		return uuid.UUID{}, err
 	}
 
