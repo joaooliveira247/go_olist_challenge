@@ -287,7 +287,7 @@ func TestDeleteSuccess(t *testing.T) {
 	expectedID := uuid.New()
 
 	mock.ExpectBegin()
-	mock.ExpectQuery(regexp.QuoteMeta(`DELETE FROM "authors" WHERE id = $1`)).WithArgs(expectedID)
+	mock.ExpectExec(regexp.QuoteMeta(`DELETE FROM "authors" WHERE "authors"."id" = $1`)).WithArgs(expectedID).WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectCommit()
 
 	repository := repositories.NewAuthorRepository(gormDB)
