@@ -71,6 +71,9 @@ func (repository *authorRepository) GetByID(id uuid.UUID) (models.Author, error)
 	result := repository.db.First(&author, "id = ?", id)
 
 	if err := result.Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return models.Author{}, &custom.AuthorNotFound
+		}
 		return models.Author{}, err
 	}
 
