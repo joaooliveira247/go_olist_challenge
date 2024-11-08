@@ -237,6 +237,27 @@ func TestGetByIDSuccess(t *testing.T) {
 	assert.Nil(t, err)
 }
 
+func TestGetByIDNotFoundError(t *testing.T) {
+	gormDB, mock := SetupMockDB()
+
+	defer func() {
+		db, _ := gormDB.DB()
+		db.Close()
+	}()
+
+	expectedID := uuid.New()
+
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "authors" WHERE id = $1 ORDER BY "authors"."id" LIMIT $2`)).WithArgs(expectedID, 1).WillReturnError(gorm.ErrRecordNotFound)
+
+	repository := repositories.NewAuthorRepository(gormDB)
+
+	author, err := repository.GetByID(expectedID)
+
+	assert.Equal(t, models.Author{}, author)
+	assert.Error(t, err)
+	assert.ErrorIs(t, err, &errors.AuthorNotFound)
+}
+
 func TestGetByIDNotExpectedError(t *testing.T) {
 	gormDB, mock := SetupMockDB()
 
