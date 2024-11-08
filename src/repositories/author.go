@@ -99,5 +99,9 @@ func (repository *authorRepository) Delete(id uuid.UUID) error {
 		return err
 	}
 
+	if result.RowsAffected < 1 {
+		return &custom.AuthorNotFound
+	}
+
 	return nil
 }
