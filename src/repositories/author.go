@@ -14,6 +14,7 @@ type AuthorRepository interface {
 	Create(author *models.Author) (uuid.UUID, error)
 	CreateMany(authors *[]models.Author) ([]uuid.UUID, error)
 	GetAll() ([]models.Author, error)
+	GetByID(id uuid.UUID) (models.Author, error)
 }
 
 type authorRepository struct {
