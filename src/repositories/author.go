@@ -16,6 +16,7 @@ type AuthorRepository interface {
 	GetAll() ([]models.Author, error)
 	GetByID(id uuid.UUID) (models.Author, error)
 	GetByName(name string) ([]models.Author, error)
+	Delete(id uuid.UUID) error
 }
 
 type authorRepository struct {
