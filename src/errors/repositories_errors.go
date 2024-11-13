@@ -11,4 +11,5 @@ type NotFound struct {
 var (
 	AuthorAlreadyExists = AlreadyExists{BaseError{"author", "already exists"}}
 	AuthorGenericError  = GenericError{BaseError{"author", "generic error"}}
+	AuthorNotFound      = NotFound{BaseError{"author", "not found"}}
 )
