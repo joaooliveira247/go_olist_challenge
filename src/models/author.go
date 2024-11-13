@@ -16,10 +16,3 @@ func (author *Author) validate() error {
 	}
 	return nil
 }
-
-func (author *Author) Prepare() error {
-	if err := author.validate(); err != nil {
-		return err
-	}
-	return nil
-}
