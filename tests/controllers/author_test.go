@@ -63,3 +63,21 @@ func TestCreateReturnAlreadyExists(t *testing.T) {
 	assert.Equal(t, http.StatusConflict, w.Code)
 	assert.JSONEq(t, `{"message": "author already exists"}`, w.Body.String())
 }
+
+func TestCreateReturnInvalidRequestBody(t *testing.T) {
+	mockRepository := new(mocks.AuthorRepository)
+	controller := controllers.NewAuthorController(mockRepository)
+
+	w := httptest.NewRecorder()
+	gin.SetMode(gin.TestMode)
+	c, _ := gin.CreateTestContext(w)
+
+	body := `{"name": "L"}`
+
+	c.Request, _ = http.NewRequest(http.MethodPost, "/authors/", bytes.NewBufferString(body))
+	c.Request.Header.Set("Content-Type", "application/json")
+
+	controller.CreateAuthor(c)
+	assert.Equal(t, http.StatusUnprocessableEntity, w.Code)
+	assert.JSONEq(t, `{"message": "request body invalid"}`, w.Body.String())
+}
