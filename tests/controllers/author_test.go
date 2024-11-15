@@ -81,3 +81,30 @@ func TestCreateReturnInvalidRequestBody(t *testing.T) {
 	assert.Equal(t, http.StatusUnprocessableEntity, w.Code)
 	assert.JSONEq(t, `{"message": "request body invalid"}`, w.Body.String())
 }
+
+func TestCreateReturnUnableCreateEntity(t *testing.T) {
+	mockRepository := new(mocks.AuthorRepository)
+
+	author := models.Author{
+		Name: "Luciano Ramalho",
+	}
+
+	mockRepository.On("Create", &author).Return(uuid.UUID{}, &errors.AuthorGenericError)
+
+	w := httptest.NewRecorder()
+	gin.SetMode(gin.TestMode)
+
+	c, _ := gin.CreateTestContext(w)
+
+	body := `{"name": "Luciano Ramalho"}`
+
+	c.Request, _ = http.NewRequest(http.MethodPost, "/authors/", bytes.NewBufferString(body))
+	c.Request.Header.Set("Content-Type", "application/json")
+
+	controller := controllers.NewAuthorController(mockRepository)
+
+	controller.CreateAuthor(c)
+
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+	assert.JSONEq(t, `{"message": "unable to create entity"}`, w.Body.String())
+}
