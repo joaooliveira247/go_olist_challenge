@@ -13,4 +13,5 @@ type Response struct {
 
 var (
 	InvalidRequestBody = Response{http.StatusUnprocessableEntity, gin.H{"message": "request body invalid"}}
+	UnableConnectDatabase = Response{http.StatusInternalServerError, gin.H{"message": "unable to connect to database"}}
 )
