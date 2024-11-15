@@ -23,8 +23,8 @@ type authorRepository struct {
 	db *gorm.DB
 }
 
-func NewAuthorRepository(db *gorm.DB) authorRepository {
-	return authorRepository{db}
+func NewAuthorRepository(db *gorm.DB) AuthorRepository {
+	return &authorRepository{db}
 }
 
 func (repository *authorRepository) Create(author *models.Author) (uuid.UUID, error) {
