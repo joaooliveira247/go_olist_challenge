@@ -7,3 +7,7 @@ import (
 type AuthorController struct {
 	repository repositories.AuthorRepository
 }
+
+func NewAuthorController(repo repositories.AuthorRepository) *AuthorController {
+	return &AuthorController{repo}
+}
