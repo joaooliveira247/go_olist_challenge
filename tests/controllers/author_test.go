@@ -197,3 +197,22 @@ func TestGetAuthorByIDSucess(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.JSONEq(t, string(expectedJSON), w.Body.String())
 }
+
+func TestGetAuthorByIDReturnIvalidID(t *testing.T) {
+	mockRepository := new(mocks.AuthorRepository)
+	w := httptest.NewRecorder()
+	gin.SetMode(gin.TestMode)
+	
+	c, _ := gin.CreateTestContext(w)
+	c.Request, _ = http.NewRequest(http.MethodGet, fmt.Sprintf("/authors/%s", "invalid id"), nil)
+	c.Request.Header.Set("Content-Type", "application/json")
+	c.Params = gin.Params{
+		{Key: "id", Value: "invalid id"},
+	}
+	
+	controller := controllers.NewAuthorController(mockRepository)
+	controller.GetAuthorByID(c)
+	
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.JSONEq(t, `{"message": "invalid id"}`, w.Body.String())
+}
