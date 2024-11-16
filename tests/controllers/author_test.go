@@ -146,3 +146,22 @@ func TestGetAllAuthorsSuccess(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.JSONEq(t, string(expectedJson), w.Body.String())
 }
+
+func TestGetAllAuthorsReturnUnableFetchEntity(t *testing.T) {
+	mockRepository := new(mocks.AuthorRepository)
+
+	mockRepository.On("GetAll").Return(nil, &errors.AuthorGenericError)
+	
+	w := httptest.NewRecorder()
+	gin.SetMode(gin.TestMode)
+	
+	c, _ := gin.CreateTestContext(w)
+	c.Request, _ = http.NewRequest(http.MethodGet, "/authors/", nil)
+	
+	controller := controllers.NewAuthorController(mockRepository)
+	
+	controller.GetAllAuthors(c)
+	
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+	assert.JSONEq(t, `{"message": "unable to fetch entity"}`, w.Body.String())
+}
