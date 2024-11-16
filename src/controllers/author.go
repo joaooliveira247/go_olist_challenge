@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	custom "github.com/joaooliveira247/go_olist_challenge/src/errors"
 	"github.com/joaooliveira247/go_olist_challenge/src/models"
 	"github.com/joaooliveira247/go_olist_challenge/src/repositories"
@@ -51,5 +52,24 @@ func (ctrl *AuthorController) GetAllAuthors(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, authors)
+	return
+}
+
+func (ctrl *AuthorController) GetAuthorByID(ctx *gin.Context) {
+	id, err := uuid.Parse(ctx.Param("id"))
+
+	if err != nil {
+		ctx.JSON(response.InvalidID.StatusCode, response.InvalidID.Message)
+		return
+	}
+
+	author, err := ctrl.repository.GetByID(id)
+
+	if err != nil {
+		ctx.JSON(response.UnableFetchEntity.StatusCode, response.UnableFetchEntity.Message)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, author)
 	return
 }
