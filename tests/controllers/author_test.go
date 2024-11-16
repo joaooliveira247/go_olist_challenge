@@ -151,17 +151,49 @@ func TestGetAllAuthorsReturnUnableFetchEntity(t *testing.T) {
 	mockRepository := new(mocks.AuthorRepository)
 
 	mockRepository.On("GetAll").Return(nil, &errors.AuthorGenericError)
-	
+
 	w := httptest.NewRecorder()
 	gin.SetMode(gin.TestMode)
-	
+
 	c, _ := gin.CreateTestContext(w)
 	c.Request, _ = http.NewRequest(http.MethodGet, "/authors/", nil)
-	
+
 	controller := controllers.NewAuthorController(mockRepository)
-	
+
 	controller.GetAllAuthors(c)
-	
+
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
 	assert.JSONEq(t, `{"message": "unable to fetch entity"}`, w.Body.String())
+}
+
+func TestGetAuthorByIDSucess(t *testing.T) {
+	mockRepository := new(mocks.AuthorRepository)
+
+	expectedID := uuid.New()
+
+	author := models.Author{
+		ID:   expectedID,
+		Name: "Machado de Assis",
+	}
+
+	mockRepository.On("GetByID", expectedID).Return(author, nil)
+
+	w := httptest.NewRecorder()
+	gin.SetMode(gin.TestMode)
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request, _ = http.NewRequest(http.MethodGet, fmt.Sprintf("/authors/%s", expectedID), nil)
+	c.Request.Header.Set("Content-Type", "application/json")
+	c.Params = gin.Params{
+		{Key: "id", Value: fmt.Sprintf("%s", expectedID)},
+	}
+
+	controlller := controllers.NewAuthorController(mockRepository)
+	controlller.GetAuthorByID(c)
+
+	expectedJSON, _ := json.Marshal(author)
+
+	t.Log(c.Request.URL, expectedID)
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.JSONEq(t, string(expectedJSON), w.Body.String())
 }
