@@ -312,3 +312,24 @@ func TestGetAuthorByNameLTOneParamReturnInvalidQuery(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 	assert.JSONEq(t, `{"message": "invalid query param"}`, w.Body.String())
 }
+
+func TestGetAuthorByNameReturnUnableFetchEntity(t *testing.T) {
+	mockRepository := new(mocks.AuthorRepository)
+
+	mockRepository.On("GetByName", "de Andrade").Return(nil, &errors.AuthorGenericError)
+
+	w := httptest.NewRecorder()
+	gin.SetMode(gin.TestMode)
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request, _ = http.NewRequest(http.MethodGet, "/authors/?name=de%20Andrade", nil)
+	c.Request.Header.Set("Content-Type", "application/json")
+	c.Request.URL.Query().Add("name", "de Andrade")
+
+	controller := controllers.NewAuthorController(mockRepository)
+
+	controller.GetAuthorByName(c)
+
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+	assert.JSONEq(t, `{"message": "unable to fetch entity"}`, w.Body.String())
+}
