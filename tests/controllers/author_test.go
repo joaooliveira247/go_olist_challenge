@@ -240,3 +240,37 @@ func TestGetAuthorByIDReturnUnableFetchEntity(t *testing.T) {
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
 	assert.JSONEq(t, `{"message": "unable to fetch entity"}`, w.Body.String())
 }
+
+func TestGetAuthorByNameSucess(t *testing.T) {
+	mockRepository := new(mocks.AuthorRepository)
+
+	authors := []models.Author{
+		{
+			ID:   uuid.New(),
+			Name: "Oswald de Andrade",
+		},
+		{
+			ID:   uuid.New(),
+			Name: "Mário de Andrade",
+		},
+	}
+
+	mockRepository.On("GetByName", "de Andrade").Return(authors, nil)
+
+	w := httptest.NewRecorder()
+	gin.SetMode(gin.TestMode)
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request, _ = http.NewRequest(http.MethodGet, "/authors/?name=de%20Andrade", nil)
+	c.Request.Header.Set("Content-Type", "application/json")
+	c.Request.URL.Query().Add("name", "de Andrade")
+
+	controller := controllers.NewAuthorController(mockRepository)
+
+	controller.GetAuthorByName(c)
+
+	expectedJSON, _ := json.Marshal(authors)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.JSONEq(t, string(expectedJSON), w.Body.String())
+}
