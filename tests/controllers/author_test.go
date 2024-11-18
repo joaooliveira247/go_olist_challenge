@@ -358,3 +358,24 @@ func TestDeleteAuthorSuccess(t *testing.T) {
 	assert.Equal(t, http.StatusNoContent, w.Code)
 	assert.Empty(t, w.Body.String())
 }
+
+func TestDeleteAuthorReturnInvalidID(t *testing.T) {
+	mockRepository := new(mocks.AuthorRepository)
+
+	w := httptest.NewRecorder()
+	gin.SetMode(gin.TestMode)
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request, _ = http.NewRequest(http.MethodDelete, "/authors/56", nil)
+	c.Request.Header.Set("Content-Type", "application/json")
+	c.Params = gin.Params{
+		{Key: "id", Value: "56"},
+	}
+
+	controller := controllers.NewAuthorController(mockRepository)
+
+	controller.DeleteAuthor(c)
+
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.JSONEq(t, `{"message": "invalid id"}`, w.Body.String())
+}
