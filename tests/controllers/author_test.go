@@ -333,3 +333,28 @@ func TestGetAuthorByNameReturnUnableFetchEntity(t *testing.T) {
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
 	assert.JSONEq(t, `{"message": "unable to fetch entity"}`, w.Body.String())
 }
+
+func TestDeleteAuthorSuccess(t *testing.T) {
+	mockRepository := new(mocks.AuthorRepository)
+
+	expectedID := uuid.New()
+
+	mockRepository.On("Delete", expectedID).Return(nil)
+
+	w := httptest.NewRecorder()
+	gin.SetMode(gin.TestMode)
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request, _ = http.NewRequest(http.MethodDelete, fmt.Sprintf("/authors/%s", expectedID), nil)
+	c.Request.Header.Set("Content-Type", "application/json")
+	c.Params = gin.Params{
+		{Key: "id", Value: fmt.Sprintf("%s", expectedID)},
+	}
+
+	controller := controllers.NewAuthorController(mockRepository)
+
+	controller.DeleteAuthor(c)
+
+	assert.Equal(t, http.StatusNoContent, w.Code)
+	assert.Empty(t, w.Body.String())
+}
