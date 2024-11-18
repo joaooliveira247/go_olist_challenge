@@ -93,3 +93,23 @@ func (ctrl *AuthorController) GetAuthorByName(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, authors)
 	return
 }
+
+func (ctrl *AuthorController) DeleteAuthor(ctx *gin.Context) {
+	id, err := uuid.Parse(ctx.Param("id"))
+
+	if err != nil {
+		ctx.JSON(response.InvalidID.StatusCode, response.InvalidID.Message)
+		return
+	}
+
+	if err = ctrl.repository.Delete(id); err != nil {
+		if errors.Is(err, &custom.AuthorNotFound) {
+			ctx.JSON(response.AuthorNotFound.StatusCode, response.AuthorNotFound.Message)
+			return
+		}
+		ctx.JSON(response.UnableFetchEntity.StatusCode, response.UnableFetchEntity.Message)
+		return
+	}
+
+	ctx.JSON(http.StatusNoContent, nil)
+}
