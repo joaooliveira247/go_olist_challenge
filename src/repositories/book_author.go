@@ -1,8 +1,6 @@
 package repositories
 
 import (
-	"errors"
-
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 
@@ -18,3 +16,6 @@ type bookAuthorRepository struct {
 	db *gorm.DB
 }
 
+func NewBookAuthorRepository(db *gorm.DB) BookAuthorRepository {
+	return &bookAuthorRepository{db}
+}
