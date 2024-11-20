@@ -109,3 +109,26 @@ func TestDeleteBookAuthorSuccess(t *testing.T) {
 	err := repository.Delete(bookID)
 	assert.Nil(t, err)
 }
+
+func TestDeleteBookAuthorReturnGenericError(t *testing.T) {
+	gormDB, mock := SetupMockDB()
+
+	defer func() {
+		db, _ := gormDB.DB()
+		db.Close()
+	}()
+
+	bookID := uuid.New()
+
+	mock.ExpectBegin()
+	mock.ExpectExec(
+		regexp.QuoteMeta(`DELETE FROM "book_authors" WHERE book_id = $1`),
+	).WithArgs(bookID).WillReturnError(&errors.BookAuthorGenericError)
+	mock.ExpectRollback()
+
+	repository := repositories.NewBookAuthorRepository(gormDB)
+	err := repository.Delete(bookID)
+
+	assert.Error(t, err)
+	assert.ErrorIs(t, err, &errors.BookAuthorGenericError)
+}
