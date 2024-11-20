@@ -86,3 +86,26 @@ func TestCreateBookAuthorReturnRelationshipAlreadyExists(t *testing.T) {
 	assert.Error(t, err)
 	assert.ErrorIs(t, err, &errors.RelationshipAlreadyExists)
 }
+
+func TestDeleteBookAuthorSuccess(t *testing.T) {
+	gormDB, mock := SetupMockDB()
+
+	defer func() {
+		db, _ := gormDB.DB()
+		db.Close()
+	}()
+
+	bookID := uuid.New()
+
+	mock.ExpectBegin()
+	mock.ExpectExec(
+		regexp.QuoteMeta(
+			`DELETE FROM "book_authors" WHERE book_id = $1`,
+		),
+	).WithArgs(bookID).WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+
+	repository := repositories.NewBookAuthorRepository(gormDB)
+	err := repository.Delete(bookID)
+	assert.Nil(t, err)
+}
