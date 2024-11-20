@@ -1,7 +1,6 @@
 package repositories_test
 
 import (
-	"log"
 	"regexp"
 	"testing"
 
@@ -11,23 +10,8 @@ import (
 	"github.com/joaooliveira247/go_olist_challenge/src/models"
 	"github.com/joaooliveira247/go_olist_challenge/src/repositories"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
-
-func SetupMockDB() (*gorm.DB, sqlmock.Sqlmock) {
-	db, mock, err := sqlmock.New()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	gormDB, err := gorm.Open(postgres.New(postgres.Config{Conn: db}), &gorm.Config{})
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return gormDB, mock
-}
 
 func TestCreateSuccess(t *testing.T) {
 	gormDB, mock := SetupMockDB()
