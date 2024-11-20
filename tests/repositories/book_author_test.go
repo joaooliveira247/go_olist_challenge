@@ -62,3 +62,27 @@ func TestCreateBookAuthorReturnGenericError(t *testing.T) {
 	assert.Error(t, err)
 	assert.ErrorIs(t, err, &errors.AuthorGenericError)
 }
+
+func TestCreateBookReturnRelationshipAlreadyExists(t *testing.T) {
+	gormDB, mock := SetupMockDB()
+
+	defer func() {
+		db, _ := gormDB.DB()
+		db.Close()
+	}()
+
+	bookID := uuid.New()
+	authorID := uuid.New()
+
+	mock.ExpectBegin()
+	mock.ExpectExec(
+		regexp.QuoteMeta(`INSERT INTO "book_authors" ("book_id","author_id") VALUES ($1,$2)`),
+	).WithArgs(bookID, authorID).WillReturnError(&errors.RelationshipAlreadyExists)
+	mock.ExpectRollback()
+
+	repository := repositories.NewBookAuthorRepository(gormDB)
+	err := repository.Create(&models.BookAuthor{BookID: bookID, AuthorID: authorID})
+
+	assert.Error(t, err)
+	assert.ErrorIs(t, err, &errors.RelationshipAlreadyExists)
+}
