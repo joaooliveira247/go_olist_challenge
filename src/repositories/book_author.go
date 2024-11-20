@@ -32,3 +32,10 @@ func (repository *bookAuthorRepository) Create(relationship *models.BookAuthor) 
 	}
 	return nil
 }
+
+func (repository *bookAuthorRepository) Delete(bookID uuid.UUID) error {
+	if err := repository.db.Delete(&models.BookAuthor{}, "book_id = ?", bookID).Error; err != nil {
+		return err
+	}
+	return nil
+}
