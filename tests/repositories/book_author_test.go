@@ -63,7 +63,7 @@ func TestCreateBookAuthorReturnGenericError(t *testing.T) {
 	assert.ErrorIs(t, err, &errors.AuthorGenericError)
 }
 
-func TestCreateBookReturnRelationshipAlreadyExists(t *testing.T) {
+func TestCreateBookAuthorReturnRelationshipAlreadyExists(t *testing.T) {
 	gormDB, mock := SetupMockDB()
 
 	defer func() {
