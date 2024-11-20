@@ -53,14 +53,14 @@ func TestCreateBookAuthorReturnGenericError(t *testing.T) {
 		regexp.QuoteMeta(
 			`INSERT INTO "book_authors" ("book_id","author_id") VALUES ($1,$2)`,
 		),
-	).WithArgs(bookID, authorID).WillReturnError(&errors.AuthorGenericError)
+	).WithArgs(bookID, authorID).WillReturnError(&errors.BookAuthorGenericError)
 	mock.ExpectRollback()
 
 	repository := repositories.NewBookAuthorRepository(gormDB)
 	err := repository.Create(&models.BookAuthor{BookID: bookID, AuthorID: authorID})
 
 	assert.Error(t, err)
-	assert.ErrorIs(t, err, &errors.AuthorGenericError)
+	assert.ErrorIs(t, err, &errors.BookAuthorGenericError)
 }
 
 func TestCreateBookAuthorReturnRelationshipAlreadyExists(t *testing.T) {
