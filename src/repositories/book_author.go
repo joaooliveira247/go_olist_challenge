@@ -1,9 +1,12 @@
 package repositories
 
 import (
+	"errors"
+
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 
+	custom "github.com/joaooliveira247/go_olist_challenge/src/errors"
 	"github.com/joaooliveira247/go_olist_challenge/src/models"
 )
 
@@ -18,4 +21,14 @@ type bookAuthorRepository struct {
 
 func NewBookAuthorRepository(db *gorm.DB) BookAuthorRepository {
 	return &bookAuthorRepository{db}
+}
+
+func (repository *bookAuthorRepository) Create(relationship *models.BookAuthor) error {
+	if err := repository.db.Create(&relationship).Error; err != nil {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			return &custom.RelationshipAlreadyExists
+		}
+		return err
+	}
+	return nil
 }
