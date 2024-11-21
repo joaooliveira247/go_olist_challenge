@@ -14,4 +14,5 @@ var (
 	BookAuthorGenericError    = GenericError{BaseError{"book_author", "generic error"}}
 	AuthorNotFound            = NotFound{BaseError{"author", "not found"}}
 	RelationshipAlreadyExists = AlreadyExists{BaseError{"relationship", "already exists"}}
+	BookAlreadyExists         = AlreadyExists{BaseError{"book", "already exists"}}
 )
