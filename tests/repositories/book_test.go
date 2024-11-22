@@ -78,3 +78,35 @@ func TestCreateBookReturnAlredyExists(t *testing.T) {
 	assert.ErrorIs(t, err, &errors.BookAlreadyExists)
 	assert.Equal(t, uuid.Nil, id)
 }
+
+func TestCreateBookReturnGenericError(t *testing.T) {
+	gormDB, mock := SetupMockDB()
+
+	defer func() {
+		db, _ := gormDB.DB()
+		db.Close()
+	}()
+
+	book := models.Book{
+		Title:           "The Rust Programming Language",
+		Edition:         1,
+		PublicationYear: 2018,
+	}
+
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "books" WHERE "books"."title" = $1 AND "books"."edition" = $2 AND "books"."publication_year" = $3 ORDER BY "books"."id" LIMIT $4`)).WithArgs(book.Title, book.Edition, book.PublicationYear, 1).WillReturnRows(sqlmock.NewRows([]string{}))
+	mock.ExpectBegin()
+	mock.ExpectQuery(
+		regexp.QuoteMeta(
+			`INSERT INTO "books" ("title","edition","publication_year") VALUES ($1,$2,$3) RETURNING "id"`,
+		),
+	).WithArgs(book.Title, book.Edition, book.PublicationYear).WillReturnError(&errors.BookGenericError)
+	mock.ExpectRollback()
+
+	repository := repositories.NewBookRepository(gormDB)
+	id, err := repository.Create(&book)
+
+	assert.Error(t, err)
+	t.Log(err)
+	assert.ErrorIs(t, err, &errors.BookGenericError)
+	assert.Equal(t, uuid.Nil, id)
+}
