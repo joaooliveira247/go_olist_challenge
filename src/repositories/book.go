@@ -1,8 +1,14 @@
 package repositories
 
-import "gorm.io/gorm"
+import (
+	"github.com/google/uuid"
+	custom "github.com/joaooliveira247/go_olist_challenge/src/errors"
+	"github.com/joaooliveira247/go_olist_challenge/src/models"
+	"gorm.io/gorm"
+)
 
 type BookRepository interface {
+	Create(book *models.Book) (uuid.UUID, error)
 }
 
 type bookRepository struct {
@@ -11,4 +17,18 @@ type bookRepository struct {
 
 func NewBookRepository(db *gorm.DB) BookRepository {
 	return &bookRepository{db}
+}
+
+func (repository *bookRepository) Create(book *models.Book) (uuid.UUID, error) {
+	result := repository.db.FirstOrCreate(&book, book)
+
+	if err := result.Error; err != nil {
+		return uuid.Nil, err
+	}
+
+	if result.RowsAffected < 1 {
+		return uuid.Nil, &custom.BookAlreadyExists
+	}
+
+	return book.ID, nil
 }
