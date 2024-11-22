@@ -4,7 +4,6 @@ import (
 	"log"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/joaooliveira247/go_olist_challenge/src/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -21,10 +20,4 @@ func SetupMockDB() (*gorm.DB, sqlmock.Sqlmock) {
 	}
 
 	return gormDB, mock
-}
-
-var SingleBookMocked = models.Book{
-	Title:           "The Rust Programming Language",
-	Edition:         1,
-	PublicationYear: 2018,
 }
