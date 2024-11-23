@@ -131,9 +131,31 @@ func TestDeleteBookReturnNotFound(t *testing.T) {
 	mock.ExpectBegin()
 	mock.ExpectExec(regexp.QuoteMeta(`DELETE FROM "books" WHERE "books"."id" = $1`)).WithArgs(bookID).WillReturnResult(sqlmock.NewResult(0, 0))
 	mock.ExpectCommit()
-	
+
 	repository := repositories.NewBookRepository(gormDB)
 	err := repository.Delete(bookID)
 	assert.Error(t, err)
 	assert.ErrorIs(t, err, &errors.BookNotFound)
+}
+
+func TestDeleteBookReturnGenericError(t *testing.T) {
+	gormDB, mock := SetupMockDB()
+
+	defer func() {
+		db, _ := gormDB.DB()
+		db.Close()
+	}()
+
+	bookID := uuid.New()
+
+	mock.ExpectBegin()
+	mock.ExpectExec(regexp.QuoteMeta(`DELETE FROM "books" WHERE "books"."id" = $1`)).WithArgs(bookID).WillReturnError(&errors.BookGenericError)
+	mock.ExpectRollback()
+
+	repository := repositories.NewBookRepository(gormDB)
+
+	err := repository.Delete(bookID)
+
+	assert.Error(t, err)
+	assert.ErrorIs(t, err, &errors.BookGenericError)
 }
