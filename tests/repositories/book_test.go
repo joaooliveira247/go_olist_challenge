@@ -7,6 +7,7 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/google/uuid"
 	"github.com/joaooliveira247/go_olist_challenge/src/errors"
+	"github.com/joaooliveira247/go_olist_challenge/src/models"
 	"github.com/joaooliveira247/go_olist_challenge/src/repositories"
 	"github.com/stretchr/testify/assert"
 )
@@ -96,6 +97,29 @@ func TestCreateBookReturnGenericError(t *testing.T) {
 	t.Log(err)
 	assert.ErrorIs(t, err, &errors.BookGenericError)
 	assert.Equal(t, uuid.Nil, id)
+}
+
+func TestUpdateBookSuccess(t *testing.T) {
+	gormDB, mock := SetupMockDB()
+
+	defer func() {
+		db, _ := gormDB.DB()
+		db.Close()
+	}()
+
+	bookID := uuid.New()
+
+	mock.ExpectBegin()
+	mock.ExpectExec(regexp.QuoteMeta(`UPDATE "books" SET "edition"=$1,"publication_year"=$2 WHERE id = $3`)).WithArgs(2, 2023, bookID).WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+
+	repository := repositories.NewBookRepository(gormDB)
+	err := repository.Update(bookID, &models.Book{
+		Edition:         2,
+		PublicationYear: 2023,
+	})
+	
+	assert.Nil(t, err)
 }
 
 func TestDeleteBookSuccess(t *testing.T) {
