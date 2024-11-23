@@ -21,4 +21,5 @@ var (
 	BookAlreadyExists         = AlreadyExists{BaseError{"book", "already exists"}}
 	BookGenericError          = GenericError{BaseError{"book", "generic error"}}
 	BookNotFound              = NotFound{BaseError{"book", "not found"}}
+	BookNothingToUpdate       = NothingToUpdate{BaseError{"book", "nothing to update"}}
 )
