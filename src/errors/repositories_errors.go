@@ -8,6 +8,10 @@ type NotFound struct {
 	BaseError
 }
 
+type NothingToUpdate struct {
+	BaseError
+}
+
 var (
 	AuthorAlreadyExists       = AlreadyExists{BaseError{"author", "already exists"}}
 	AuthorGenericError        = GenericError{BaseError{"author", "generic error"}}
