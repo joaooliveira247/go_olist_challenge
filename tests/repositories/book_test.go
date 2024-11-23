@@ -97,3 +97,23 @@ func TestCreateBookReturnGenericError(t *testing.T) {
 	assert.ErrorIs(t, err, &errors.BookGenericError)
 	assert.Equal(t, uuid.Nil, id)
 }
+
+func TestDeleteBookSuccess(t *testing.T) {
+	gormDB, mock := SetupMockDB()
+
+	defer func() {
+		db, _ := gormDB.DB()
+		db.Close()
+	}()
+
+	bookID := uuid.New()
+
+	mock.ExpectBegin()
+	mock.ExpectExec(regexp.QuoteMeta(`DELETE FROM "books" WHERE "books"."id" = $1`)).WithArgs(bookID).WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+
+	repository := repositories.NewBookRepository(gormDB)
+	err := repository.Delete(bookID)
+
+	assert.Nil(t, err)
+}
