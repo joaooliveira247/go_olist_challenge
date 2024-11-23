@@ -9,6 +9,7 @@ import (
 
 type BookRepository interface {
 	Create(book *models.Book) (uuid.UUID, error)
+	Delete(id uuid.UUID) error
 }
 
 type bookRepository struct {
@@ -31,4 +32,18 @@ func (repository *bookRepository) Create(book *models.Book) (uuid.UUID, error) {
 	}
 
 	return book.ID, nil
+}
+
+func (repository *bookRepository) Delete(id uuid.UUID) error {
+	result := repository.db.Delete(&models.Book{}, id)
+
+	if err := result.Error; err != nil {
+		return err
+	}
+
+	if result.RowsAffected < 1 {
+		return &custom.BookNotFound
+	}
+
+	return nil
 }
