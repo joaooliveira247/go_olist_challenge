@@ -146,6 +146,30 @@ func TestUpdateBookReturnNothingToUpdate(t *testing.T) {
 	assert.ErrorIs(t, err, &errors.BookNothingToUpdate)
 }
 
+func TestUpdateBookReturnGenericError(t *testing.T) {
+	gormDB, mock := SetupMockDB()
+
+	defer func() {
+		db, _ := gormDB.DB()
+		db.Close()
+	}()
+
+	bookID := uuid.New()
+
+	mock.ExpectBegin()
+	mock.ExpectExec(regexp.QuoteMeta(`UPDATE "books" SET "edition"=$1,"publication_year"=$2 WHERE id = $3`)).WithArgs(2, 2023, bookID).WillReturnError(&errors.BookGenericError)
+	mock.ExpectRollback()
+
+	repository := repositories.NewBookRepository(gormDB)
+	err := repository.Update(bookID, &models.Book{
+		Edition:         2,
+		PublicationYear: 2023,
+	})
+
+	assert.Error(t, err)
+	assert.ErrorIs(t, err, &errors.BookGenericError)
+}
+
 func TestDeleteBookSuccess(t *testing.T) {
 	gormDB, mock := SetupMockDB()
 
