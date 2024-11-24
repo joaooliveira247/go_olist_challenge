@@ -34,6 +34,20 @@ func (repository *bookRepository) Create(book *models.Book) (uuid.UUID, error) {
 	return book.ID, nil
 }
 
+func (repository *bookRepository) Update(id uuid.UUID, book *models.Book) error {
+	result := repository.db.Model(&models.Book{}).Where("id = ?", id).Updates(&models.Book{Title: book.Title, Edition: book.Edition, PublicationYear: book.PublicationYear})
+
+	if err := result.Error; err != nil {
+		return err
+	}
+
+	if result.RowsAffected < 1 {
+		return &custom.BookNothingToUpdate
+	}
+
+	return nil
+}
+
 func (repository *bookRepository) Delete(id uuid.UUID) error {
 	result := repository.db.Delete(&models.Book{}, id)
 
