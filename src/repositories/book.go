@@ -9,6 +9,7 @@ import (
 
 type BookRepository interface {
 	Create(book *models.Book) (uuid.UUID, error)
+	Update(id uuid.UUID, book *models.Book) error
 	Delete(id uuid.UUID) error
 }
 
