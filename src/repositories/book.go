@@ -48,6 +48,23 @@ func (repository *bookRepository) GetAll() ([]models.BookOut, error) {
 	return books, nil
 }
 
+func (repository *bookRepository) GetBookByID(id uuid.UUID) (models.BookOut, error) {
+	var book models.BookOut
+
+	result := repository.db.Raw(`SELECT b.id, b.title, b.edition, b.publication_year, array_agg(a.name) AS authors FROM book_author ba INNER JOIN books b ON ba.book_id = b.id
+INNER JOIN authors a ON ba.author_id = a.id WHERE ba.book_id = ? GROUP BY b.id ORDER BY b.id LIMIT 1;`, id).Scan(&book)
+
+	if err := result.Error; err != nil {
+		return models.BookOut{}, err
+	}
+
+	if result.RowsAffected < 1 {
+		return models.BookOut{}, &custom.BookNotFound
+	}
+
+	return book, nil
+}
+
 func (repository *bookRepository) Update(id uuid.UUID, book *models.Book) error {
 	result := repository.db.Model(&models.Book{}).Where("id = ?", id).Updates(&models.Book{Title: book.Title, Edition: book.Edition, PublicationYear: book.PublicationYear})
 
