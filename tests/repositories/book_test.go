@@ -170,6 +170,31 @@ func TestUpdateBookReturnGenericError(t *testing.T) {
 	assert.ErrorIs(t, err, &errors.BookGenericError)
 }
 
+func TestGetAllBooksSuccess(t *testing.T) {
+	gormDB, mock := SetupMockDB()
+
+	defer func() {
+		db, _ := gormDB.DB()
+		db.Close()
+	}()
+
+	rows := sqlmock.NewRows([]string{"id", "title", "edition", "publication_year", "authors"})
+
+	MBooks := NewMockBooks()
+
+	for _, book := range MBooks {
+		rows.AddRow(book.ID, book.Title, book.Edition, book.PublicationYear, book.AuthorsName)
+	}
+
+	mock.ExpectQuery(regexp.QuoteMeta(`select b.id, b.title, b.edition, b.publication_year, array_agg(a.name) as authors from book_author ba inner join books b on ba.book_id = b.id inner join authors a on ba.author_id = a.id group by b.id;`)).WillReturnRows(rows)
+
+	repository := repositories.NewBookRepository(gormDB)
+	books, err := repository.GetAll()
+
+	assert.Nil(t, err)
+	assert.Len(t, books, 4)
+}
+
 func TestDeleteBookSuccess(t *testing.T) {
 	gormDB, mock := SetupMockDB()
 
