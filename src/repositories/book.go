@@ -10,6 +10,7 @@ import (
 type BookRepository interface {
 	Create(book *models.Book) (uuid.UUID, error)
 	GetAll() ([]models.BookOut, error)
+	GetBookByID(id uuid.UUID) (models.BookOut, error)
 	Update(id uuid.UUID, book *models.Book) error
 	Delete(id uuid.UUID) error
 }
