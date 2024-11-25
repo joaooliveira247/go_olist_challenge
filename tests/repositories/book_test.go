@@ -248,7 +248,7 @@ func TestGetBookByIDReturnBookNotFound(t *testing.T) {
 
 	bookID := uuid.New()
 
-	mock.ExpectExec(regexp.QuoteMeta(`SELECT b.id, b.title, b.edition, b.publication_year, array_agg(a.name) AS authors FROM book_author ba INNER JOIN books b ON ba.book_id = b.id INNER JOIN authors a ON ba.author_id = a.id WHERE ba.book_id = $1 GROUP BY b.id ORDER BY b.id LIMIT 1;`)).WithArgs(bookID).WillReturnResult(sqlmock.NewResult(0, 0))
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT b.id, b.title, b.edition, b.publication_year, array_agg(a.name) AS authors FROM book_author ba INNER JOIN books b ON ba.book_id = b.id INNER JOIN authors a ON ba.author_id = a.id WHERE ba.book_id = $1 GROUP BY b.id ORDER BY b.id LIMIT 1;`)).WithArgs(bookID).WillReturnRows(sqlmock.NewRows([]string{}))
 
 	repository := repositories.NewBookRepository(gormDB)
 	book, err := repository.GetBookByID(bookID)
