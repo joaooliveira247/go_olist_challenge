@@ -35,6 +35,18 @@ func (repository *bookRepository) Create(book *models.Book) (uuid.UUID, error) {
 	return book.ID, nil
 }
 
+func (repository *bookRepository) GetAll() ([]models.BookOut, error) {
+	var books []models.BookOut
+
+	result := repository.db.Raw(`select b.id, b.title, b.edition, b.publication_year, array_agg(a.name) as authors from book_author ba inner join books b on ba.book_id = b.id inner join authors a on ba.author_id = a.id group by b.id;`).Scan(&books)
+
+	if err := result.Error; err != nil {
+		return nil, err
+	}
+
+	return books, nil
+}
+
 func (repository *bookRepository) Update(id uuid.UUID, book *models.Book) error {
 	result := repository.db.Model(&models.Book{}).Where("id = ?", id).Updates(&models.Book{Title: book.Title, Edition: book.Edition, PublicationYear: book.PublicationYear})
 
