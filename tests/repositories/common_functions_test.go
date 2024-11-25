@@ -33,6 +33,18 @@ func NewMockBook() *models.Book {
 	}
 }
 
+func NewMockBookOut() models.BookOut {
+	return models.BookOut{
+		Book: models.Book{
+			ID: uuid.New(),
+			Title: "the Rust Programming Language",
+			Edition: 1,
+			PublicationYear: 2018,
+		},
+		AuthorsName: pq.StringArray{"Carol Nichols", "Steve Klabnik"},
+	}
+}
+
 func NewMockBooks() []models.BookOut {
 	return []models.BookOut{
 		{
