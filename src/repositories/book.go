@@ -66,6 +66,19 @@ INNER JOIN authors a ON ba.author_id = a.id WHERE ba.book_id = ? GROUP BY b.id O
 	return book, nil
 }
 
+func (repository *bookRepository) GetBooksByAuthorID(authorID uuid.UUID) ([]models.BookOut, error) {
+	var books []models.BookOut
+
+	result := repository.db.Raw(`SELECT b.id, b.title, b.edition, b.publication_year, array_agg(a.name) AS authors FROM book_author ba INNER JOIN books b ON ba.book_id = b.id
+		INNER JOIN authors a ON ba.author_id = a.id WHERE ba.author_id = ? GROUP BY b.id ORDER BY b.id;`, authorID).Scan(&books)
+
+	if err := result.Error; err != nil {
+		return nil, err
+	}
+
+	return books, nil
+}
+
 func (repository *bookRepository) Update(id uuid.UUID, book *models.Book) error {
 	result := repository.db.Model(&models.Book{}).Where("id = ?", id).Updates(&models.Book{Title: book.Title, Edition: book.Edition, PublicationYear: book.PublicationYear})
 
