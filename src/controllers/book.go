@@ -8,3 +8,7 @@ type BookController struct {
 	bookRepository repositories.BookRepository
 	bookAuthorRepository repositories.BookAuthorRepository
 }
+
+func NewBookController(bookRepo repositories.BookRepository, bookAuthorRepo repositories.BookAuthorRepository) *BookController {
+	return &BookController{bookRepo, bookAuthorRepo}
+}
