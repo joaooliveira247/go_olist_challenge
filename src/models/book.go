@@ -12,6 +12,11 @@ type Book struct {
 	PublicationYear uint      `gorm:"type:smallint;column:publication_year"`
 }
 
+type BookIn struct {
+	Book
+	AuthorsID []uuid.UUID `json:"authors" binding:"gt=0,required,dive,uuid" gorm:"-"`
+}
+
 type BookOut struct {
 	Book
 	AuthorsName pq.StringArray `gorm:"type:text[];column:authors"`
