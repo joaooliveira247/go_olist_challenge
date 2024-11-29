@@ -23,12 +23,12 @@ func TestBookCreateSucess(t *testing.T) {
 	authorsID := []uuid.UUID{uuid.New(), uuid.New()}
 
 	MBookIn := models.BookIn{
-		models.Book{
+		Book: models.Book{
 			Title:           "The Rust Programming Language",
 			Edition:         1,
 			PublicationYear: 2018,
 		},
-		authorsID,
+		AuthorsID: authorsID,
 	}
 
 	mockBookRepository.On("Create", &MBookIn.Book).Return(bookID, nil)
