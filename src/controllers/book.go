@@ -1,14 +1,48 @@
 package controllers
 
 import (
+	"fmt"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/joaooliveira247/go_olist_challenge/src/models"
 	"github.com/joaooliveira247/go_olist_challenge/src/repositories"
+	"github.com/joaooliveira247/go_olist_challenge/src/response"
 )
 
 type BookController struct {
-	bookRepository repositories.BookRepository
+	bookRepository       repositories.BookRepository
 	bookAuthorRepository repositories.BookAuthorRepository
 }
 
 func NewBookController(bookRepo repositories.BookRepository, bookAuthorRepo repositories.BookAuthorRepository) *BookController {
 	return &BookController{bookRepo, bookAuthorRepo}
+}
+
+func (controller *BookController) Create(ctx *gin.Context) {
+	var book models.BookIn
+
+	if err := ctx.ShouldBindJSON(&book); err != nil {
+		ctx.JSON(response.InvalidRequestBody.StatusCode, response.InvalidRequestBody.Message)
+		fmt.Println(err)
+		return
+	}
+	
+
+	bookID, err := controller.bookRepository.Create(&book.Book)
+
+	if err != nil {
+		ctx.JSON(response.UnableCreateEntity.StatusCode, response.UnableCreateEntity.Message)
+		return
+	}
+
+	for _, author := range book.AuthorsID {
+		if err := controller.bookAuthorRepository.Create(&models.BookAuthor{BookID: bookID, AuthorID: author}); err != nil {
+			ctx.JSON(response.UnableCreateEntity.StatusCode, response.UnableCreateEntity.Message)
+			return
+		}
+	}
+
+	ctx.JSON(http.StatusCreated, gin.H{"id": bookID})
+	return
 }
