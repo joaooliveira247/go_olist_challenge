@@ -59,3 +59,93 @@ func TestBookCreateSucess(t *testing.T) {
 	assert.Equal(t, http.StatusCreated, w.Code)
 	assert.JSONEq(t, fmt.Sprintf(`{"id": "%s"}`, bookID), w.Body.String())
 }
+
+func TestBookCreateReturnInvalidRequestBody(t *testing.T) {
+	mockBookRepository := new(mocks.BookRepository)
+	mockBookAuthorRepository := new(mocks.BookAuthorRepository)
+
+	requestBodyTests := []struct {
+		name        string
+		requestBody string
+	}{
+		{
+			"Title Empty",
+			`{
+				"edition": 1,
+				"publication_year": 2018,
+				"authors": ["4ed37603-c983-4137-bbe9-bccfc30b53a6", "31455548-62a9-4935-aa89-c1d2ac036e0f"]
+}`,
+		},
+		{
+			"Title Less Than 2",
+			`{
+			"title": "Th",
+			"edition": 1,
+			"publication_year": 2018,
+			"authors": ["4ed37603-c983-4137-bbe9-bccfc30b53a6", "31455548-62a9-4935-aa89-c1d2ac036e0f"]
+}`,
+		},
+		{
+			"Edition Less Than 1",
+			`{
+			"title": "The Rust Programming Language",
+			"edition": -1,
+			"publication_year": 2018,
+			"authors": ["4ed37603-c983-4137-bbe9-bccfc30b53a6", "31455548-62a9-4935-aa89-c1d2ac036e0f"]
+}`,
+		},
+		{
+			"Publication Year Less Than 1",
+			`{
+			"title": "The Rust Programming Language",
+			"edition": 1,
+			"publication_year": -1,
+			"authors": ["4ed37603-c983-4137-bbe9-bccfc30b53a6", "31455548-62a9-4935-aa89-c1d2ac036e0f"]
+}`,
+		},
+		{
+			"One Author ID invalid",
+			`{
+			"title": "The Rust Programming Language",
+			"edition": -1,
+			"publication_year": 2018,
+			"authors": ["abc", "31455548-62a9-4935-aa89-c1d2ac036e0f"]
+}`,
+		},
+		{
+			"Both Authors ID invalid",
+			`{
+			"title": "The Rust Programming Language",
+			"edition": -1,
+			"publication_year": 2018,
+			"authors": ["abc", "def"]
+}`,
+		},
+		{
+			"Valid ID But Empty",
+			`{
+			"title": "The Rust Programming Language",
+			"edition": -1,
+			"publication_year": 2018,
+			"authors": ["00000000-0000-0000-0000-000000000000", "00000000-0000-0000-0000-000000000000"]
+}`,
+		},
+	}
+
+	for _, testCase := range requestBodyTests {
+		controller := controllers.NewBookController(mockBookRepository, mockBookAuthorRepository)
+
+		w := httptest.NewRecorder()
+		gin.SetMode(gin.TestMode)
+
+		c, _ := gin.CreateTestContext(w)
+
+		c.Request, _ = http.NewRequest(http.MethodPost, "/books/", bytes.NewBufferString(testCase.requestBody))
+		c.Request.Header.Set("Content-Type", "application/json")
+
+		controller.Create(c)
+
+		assert.Equal(t, http.StatusUnprocessableEntity, w.Code)
+		assert.JSONEq(t, `{"message": "request body invalid"}`, w.Body.String())
+	}
+}
