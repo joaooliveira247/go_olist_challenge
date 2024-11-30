@@ -179,3 +179,32 @@ func TestBookCreateReturnUnableCreateEntity(t *testing.T) {
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
 	assert.JSONEq(t, `{"message": "unable to create entity"}`, w.Body.String())
 }
+
+func TestBookCreateReturnUnableCreateEntityWhenCreateRelationship(t *testing.T) {
+	mockBookRepository := new(mocks.BookRepository)
+	mockBookAuthorRepository := new(mocks.BookAuthorRepository)
+
+	mockBookRepository.On("Create", mock.Anything).Return(uuid.New(), nil)
+	mockBookAuthorRepository.On("Create", mock.Anything).Return(&errors.BookAuthorGenericError)
+
+	body := `{
+		"title": "The Rust Programming Language",
+		"edition": 1,
+		"publication_year": 2018,
+		"authors": ["4ed37603-c983-4137-bbe9-bccfc30b53a6", "31455548-62a9-4935-aa89-c1d2ac036e0f"]
+	}`
+
+	controller := controllers.NewBookController(mockBookRepository, mockBookAuthorRepository)
+
+	w := httptest.NewRecorder()
+	gin.SetMode(gin.TestMode)
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request, _ = http.NewRequest(http.MethodPost, "/books/", bytes.NewBufferString(body))
+	c.Request.Header.Set("Content-Type", "application/json")
+
+	controller.Create(c)
+
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+	assert.JSONEq(t, `{"message": "unable to create entity"}`, w.Body.String())
+}
