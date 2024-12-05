@@ -240,6 +240,28 @@ func TestGetBookByOneQuerySuccess(t *testing.T) {
 	assert.Len(t, books, 2)
 }
 
+func TestGetBookByQuerySuccess(t *testing.T) {
+	gormDB, mock := SetupMockDB()
+
+	defer func() {
+		db, _ := gormDB.DB()
+		db.Close()
+	}()
+
+	MBook := NewMockBookOut()
+
+	rows := sqlmock.NewRows([]string{"id", "title", "edition", "publication_year", "authors"}).AddRow(MBook.ID, MBook.Title, MBook.Edition, MBook.PublicationYear, MBook.AuthorsName)
+
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT b.id, b.title, b.edition, b.publication_year, array_agg(a.name) AS authors FROM book_author ba INNER JOIN books b ON ba.book_id = b.id INNER JOIN authors a ON ba.author_id = a.id WHERE b.title = the Rust Programming Language AND b.edition = 1 AND b.publication_year = 2018 GROUP BY b.id;`)).WillReturnRows(rows)
+
+	repository := repositories.NewBookRepository(gormDB)
+	book, err := repository.GetBookByQuery(map[string]interface{}{"title": MBook.Title, "edition": MBook.Edition, "publication_year": MBook.PublicationYear})
+
+	assert.Nil(t, err)
+	assert.Len(t, book, 1)
+	assert.Equal(t, MBook, book[0])
+}
+
 func TestGetBookByIDSuccess(t *testing.T) {
 	gormDB, mock := SetupMockDB()
 
