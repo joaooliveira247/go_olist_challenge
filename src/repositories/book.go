@@ -13,6 +13,7 @@ import (
 type BookRepository interface {
 	Create(book *models.Book) (uuid.UUID, error)
 	GetAll() ([]models.BookOut, error)
+	GetBookByQuery(query map[string]interface{}) ([]models.BookOut, error)
 	GetBookByID(id uuid.UUID) (models.BookOut, error)
 	GetBooksByAuthorID(authorID uuid.UUID) ([]models.BookOut, error)
 	Update(id uuid.UUID, book *models.Book) error
