@@ -120,6 +120,36 @@ func (_m *BookRepository) GetBookByID(id uuid.UUID) (models.BookOut, error) {
 	return r0, r1
 }
 
+// GetBookByQuery provides a mock function with given fields: query
+func (_m *BookRepository) GetBookByQuery(query map[string]interface{}) ([]models.BookOut, error) {
+	ret := _m.Called(query)
+
+	if len(ret) == 0 {
+		panic("no return value specified for GetBookByQuery")
+	}
+
+	var r0 []models.BookOut
+	var r1 error
+	if rf, ok := ret.Get(0).(func(map[string]interface{}) ([]models.BookOut, error)); ok {
+		return rf(query)
+	}
+	if rf, ok := ret.Get(0).(func(map[string]interface{}) []models.BookOut); ok {
+		r0 = rf(query)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]models.BookOut)
+		}
+	}
+
+	if rf, ok := ret.Get(1).(func(map[string]interface{}) error); ok {
+		r1 = rf(query)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetBooksByAuthorID provides a mock function with given fields: authorID
 func (_m *BookRepository) GetBooksByAuthorID(authorID uuid.UUID) ([]models.BookOut, error) {
 	ret := _m.Called(authorID)
