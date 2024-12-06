@@ -9,6 +9,7 @@ import (
 	"github.com/joaooliveira247/go_olist_challenge/src/errors"
 	"github.com/joaooliveira247/go_olist_challenge/src/models"
 	"github.com/joaooliveira247/go_olist_challenge/src/repositories"
+	"github.com/joaooliveira247/go_olist_challenge/tests/mocks"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -20,7 +21,7 @@ func TestCreateBookSuccess(t *testing.T) {
 		db.Close()
 	}()
 
-	book := NewMockBook()
+	book := mocks.NewMockBook()
 
 	bookID := uuid.New()
 
@@ -55,7 +56,7 @@ func TestCreateBookReturnAlredyExists(t *testing.T) {
 
 	bookID := uuid.New()
 
-	book := NewMockBook()
+	book := mocks.NewMockBook()
 
 	mock.ExpectQuery(
 		regexp.QuoteMeta(
@@ -79,7 +80,7 @@ func TestCreateBookReturnGenericError(t *testing.T) {
 		db.Close()
 	}()
 
-	book := NewMockBook()
+	book := mocks.NewMockBook()
 
 	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "books" WHERE "books"."title" = $1 AND "books"."edition" = $2 AND "books"."publication_year" = $3 ORDER BY "books"."id" LIMIT $4`)).WithArgs(book.Title, book.Edition, book.PublicationYear, 1).WillReturnRows(sqlmock.NewRows([]string{}))
 	mock.ExpectBegin()
@@ -180,7 +181,7 @@ func TestGetAllBooksSuccess(t *testing.T) {
 
 	rows := sqlmock.NewRows([]string{"id", "title", "edition", "publication_year", "authors"})
 
-	MBooks := NewMockBooks()
+	MBooks := mocks.NewMockBooks()
 
 	for _, book := range MBooks {
 		rows.AddRow(book.ID, book.Title, book.Edition, book.PublicationYear, book.AuthorsName)
@@ -224,7 +225,7 @@ func TestGetBookByOneQuerySuccess(t *testing.T) {
 
 	rows := sqlmock.NewRows([]string{"id", "title", "edition", "publication_year", "authors"})
 
-	MBooks := NewMockBooks()[2:]
+	MBooks := mocks.NewMockBooks()[2:]
 
 	for _, book := range MBooks {
 		rows.AddRow(book.ID, book.Title, book.Edition, book.PublicationYear, book.AuthorsName)
@@ -248,7 +249,7 @@ func TestGetBookByQuerySuccess(t *testing.T) {
 		db.Close()
 	}()
 
-	MBook := NewMockBookOut()
+	MBook := mocks.NewMockBookOut()
 
 	rows := sqlmock.NewRows([]string{"id", "title", "edition", "publication_year", "authors"}).AddRow(MBook.ID, MBook.Title, MBook.Edition, MBook.PublicationYear, MBook.AuthorsName)
 
@@ -288,7 +289,7 @@ func TestGetBookByIDSuccess(t *testing.T) {
 		db.Close()
 	}()
 
-	Mbook := NewMockBookOut()
+	Mbook := mocks.NewMockBookOut()
 
 	rows := sqlmock.NewRows([]string{"id", "title", "edition", "publication_year", "authors"}).AddRow(Mbook.Book.ID, Mbook.Book.Title, Mbook.Book.Edition, Mbook.Book.PublicationYear, Mbook.AuthorsName)
 
@@ -357,7 +358,7 @@ func TestGetBooksByAuthorIDSuccess(t *testing.T) {
 
 	authorID := uuid.New()
 
-	MBooks := NewMockBooks()[2:]
+	MBooks := mocks.NewMockBooks()[2:]
 
 	rows := sqlmock.NewRows([]string{"id", "title", "edition", "publication_year", "authors"})
 
