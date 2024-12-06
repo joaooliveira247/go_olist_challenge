@@ -2,8 +2,6 @@ package dto
 
 import (
 	"encoding/json"
-
-	"github.com/google/uuid"
 )
 
 type AuthorQueryParam struct {
@@ -11,9 +9,9 @@ type AuthorQueryParam struct {
 }
 
 type BookQueryParam struct {
-	Title           string    `form:"title,omitempty" json:"title,omitempty"`
-	Edition         uint8     `form:"edition,omitempty" json:"edition,omitempty"`
-	PublicationYear uint      `form:"publicationYear,omitempty" json:"publication_year,omitempty"`
+	Title           string `form:"title,omitempty" json:"title,omitempty"`
+	Edition         uint8  `form:"edition,omitempty" json:"edition,omitempty"`
+	PublicationYear uint   `form:"publicationYear,omitempty" json:"publication_year,omitempty"`
 }
 
 func (query *BookQueryParam) AsQuery() (map[string]interface{}, error) {
