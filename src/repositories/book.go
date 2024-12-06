@@ -1,6 +1,9 @@
 package repositories
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/google/uuid"
 	custom "github.com/joaooliveira247/go_olist_challenge/src/errors"
 	"github.com/joaooliveira247/go_olist_challenge/src/models"
@@ -42,6 +45,36 @@ func (repository *bookRepository) GetAll() ([]models.BookOut, error) {
 	var books []models.BookOut
 
 	result := repository.db.Raw(`select b.id, b.title, b.edition, b.publication_year, array_agg(a.name) as authors from book_author ba inner join books b on ba.book_id = b.id inner join authors a on ba.author_id = a.id group by b.id;`).Scan(&books)
+
+	if err := result.Error; err != nil {
+		return nil, err
+	}
+
+	return books, nil
+}
+
+func (repository *bookRepository) GetBookByQuery(query map[string]interface{}) ([]models.BookOut, error) {
+	var books []models.BookOut
+
+	var whereClauses []string
+
+	for k, v := range query {
+		var formatString string
+		switch v.(type) {
+		case uint, uint8:
+			formatString = "b.%s = %d"
+		default:
+			formatString = "b.%s = %s"
+		}
+		whereClauses = append(whereClauses, fmt.Sprintf(formatString, k, v))
+	}
+
+	rawQuery := `
+		SELECT b.id, b.title, b.edition, b.publication_year, array_agg(a.name) AS authors FROM book_author ba INNER JOIN books b ON ba.book_id = b.id INNER JOIN authors a ON ba.author_id = a.id WHERE %s GROUP BY b.id;`
+
+	rawQuery = fmt.Sprintf(rawQuery, strings.Join(whereClauses, " AND "))
+
+	result := repository.db.Raw(rawQuery).Scan(&books)
 
 	if err := result.Error; err != nil {
 		return nil, err
