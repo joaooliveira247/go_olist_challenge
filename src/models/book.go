@@ -19,5 +19,5 @@ type BookIn struct {
 
 type BookOut struct {
 	Book
-	AuthorsName pq.StringArray `gorm:"type:text[];column:authors"`
+	AuthorsName pq.StringArray `json:"authors" gorm:"type:text[];column:authors"`
 }
