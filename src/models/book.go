@@ -6,10 +6,10 @@ import (
 )
 
 type Book struct {
-	ID              uuid.UUID `gorm:"primaryKey;type:uuid;default:gen_random_uuid()"`
-	Title           string    `gorm:"type:varchar(255);not null;column:title"`
-	Edition         uint8     `gorm:"type:smallint;column:edition"`
-	PublicationYear uint      `gorm:"type:smallint;column:publication_year"`
+	ID              uuid.UUID `json:"id" gorm:"primaryKey;type:uuid;default:gen_random_uuid()"`
+	Title           string    `json:"title" binding:"required,gt=2" gorm:"type:varchar(255);not null;column:title"`
+	Edition         uint8     `json:"edition" binding:"required,gt=0" gorm:"type:smallint;column:edition"`
+	PublicationYear uint      `json:"publication_year" binding:"required,gt=0" gorm:"type:smallint;column:publication_year"`
 }
 
 type BookIn struct {
