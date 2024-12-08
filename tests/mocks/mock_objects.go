@@ -32,7 +32,7 @@ func NewMockBooks() []models.BookOut {
 			Book: models.Book{
 				ID:              uuid.New(),
 				Title:           "The Rust Programming Language",
-				Edition:         1,
+				Edition:         uint8(1),
 				PublicationYear: 2018,
 			},
 			AuthorsName: pq.StringArray{"Carol Nichols", "Steve Klabnik"},
@@ -41,7 +41,7 @@ func NewMockBooks() []models.BookOut {
 			Book: models.Book{
 				ID:              uuid.New(),
 				Title:           "The Go Programming Language",
-				Edition:         2,
+				Edition:         uint8(2),
 				PublicationYear: 2015,
 			},
 			AuthorsName: pq.StringArray{"Alan A. A. Donovan", "Brian W. Kernighan"},
@@ -50,7 +50,7 @@ func NewMockBooks() []models.BookOut {
 			Book: models.Book{
 				ID:              uuid.New(),
 				Title:           "Python Fluente",
-				Edition:         1,
+				Edition:         uint8(1),
 				PublicationYear: 2015,
 			},
 			AuthorsName: pq.StringArray{"Luciano Ramalho"},
@@ -59,7 +59,7 @@ func NewMockBooks() []models.BookOut {
 			Book: models.Book{
 				ID:              uuid.New(),
 				Title:           "Python Fluente",
-				Edition:         2,
+				Edition:         uint8(2),
 				PublicationYear: 2022,
 			},
 			AuthorsName: pq.StringArray{"Luciano Ramalho"},
