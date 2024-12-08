@@ -234,3 +234,73 @@ func TestBookGetByQueryReturnAllSucess(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.JSONEq(t, string(byteMbooks), w.Body.String())
 }
+
+func TestBookGetByManyQueriesReturnSucess(t *testing.T) {
+	mockBookAuthorRepository := new(mocks.BookAuthorRepository)
+	mockBookRepository := new(mocks.BookRepository)
+
+	Mbooks := mocks.NewMockBooks()
+
+	testCases := []struct {
+		name       string
+		url        string
+		query      map[string]interface{}
+		mockResult []models.BookOut
+	}{
+		{
+			"Title Param Return Two Books",
+			"/books/?title=Python Fluente",
+			map[string]interface{}{"title": "Python Fluente"},
+			Mbooks[:2],
+		},
+		{
+			"Edition Param Return Two Books",
+			"/books/?edition=1",
+			map[string]interface{}{"edition": float64(1)},
+			[]models.BookOut{Mbooks[1], Mbooks[3]},
+		},
+		{
+			"publicationYear Param Return Two Books",
+			"/books/?publicationYear=2015",
+			map[string]interface{}{
+				"publication_year": float64(2015),
+			},
+			[]models.BookOut{Mbooks[1], Mbooks[2]},
+		},
+		{
+			"Edition and PublicatioYear Return One Book",
+			"/books/?edition=2&publicationYear=2015",
+			map[string]interface{}{"edition": float64(2), "publication_year": float64(2015)},
+			[]models.BookOut{Mbooks[1]},
+		},
+		{
+			"Title, Edition and PublicationYear Return One Book",
+			"/books/?title=The Go Programming Language&edition=2&publicationYear=2015",
+			map[string]interface{}{"title": "The Go Programming Language", "edition": float64(2), "publication_year": float64(2015)},
+			[]models.BookOut{Mbooks[1]},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			mockBookRepository.ExpectedCalls = nil
+			mockBookRepository.On("GetBookByQuery", testCase.query).Return(testCase.mockResult, nil)
+
+			controller := controllers.NewBookController(mockBookRepository, mockBookAuthorRepository)
+
+			w := httptest.NewRecorder()
+			gin.SetMode(gin.TestMode)
+
+			c, _ := gin.CreateTestContext(w)
+			c.Request, _ = http.NewRequest(http.MethodGet, testCase.url, nil)
+			c.Request.Header.Set("Content-Type", "application/json")
+
+			controller.GetBooksByQuery(c)
+
+			byteMbooks, _ := json.Marshal(testCase.mockResult)
+
+			assert.Equal(t, http.StatusOK, w.Code)
+			assert.JSONEq(t, string(byteMbooks), w.Body.String())
+		})
+	}
+}
