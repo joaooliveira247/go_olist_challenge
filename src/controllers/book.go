@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joaooliveira247/go_olist_challenge/src/dto"
 	"github.com/joaooliveira247/go_olist_challenge/src/models"
 	"github.com/joaooliveira247/go_olist_challenge/src/repositories"
 	"github.com/joaooliveira247/go_olist_challenge/src/response"
@@ -27,7 +28,6 @@ func (controller *BookController) Create(ctx *gin.Context) {
 		fmt.Println(err)
 		return
 	}
-	
 
 	bookID, err := controller.bookRepository.Create(&book.Book)
 
@@ -44,5 +44,41 @@ func (controller *BookController) Create(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusCreated, gin.H{"id": bookID})
+	return
+}
+
+func (controller *BookController) GetBooksByQuery(ctx *gin.Context) {
+	var bookQuery dto.BookQueryParam
+
+	if err := ctx.ShouldBindQuery(&bookQuery); err != nil {
+		ctx.JSON(response.InvalidParam.StatusCode, response.InvalidParam.Message)
+		return
+	}
+
+	queries, err := bookQuery.AsQuery()
+
+	if err != nil {
+		ctx.JSON(response.InvalidParam.StatusCode, response.InvalidParam.Message)
+		return
+	}
+
+	if len(queries) > 0 {
+		books, err := controller.bookRepository.GetBookByQuery(queries)
+		if err != nil {
+			ctx.JSON(response.UnableFetchEntity.StatusCode, response.UnableFetchEntity.Message)
+			return
+		}
+		ctx.JSON(http.StatusOK, books)
+		return
+	}
+
+	books, err := controller.bookRepository.GetAll()
+
+	if err != nil {
+		ctx.JSON(response.UnableFetchEntity.StatusCode, response.UnableFetchEntity.Message)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, books)
 	return
 }
