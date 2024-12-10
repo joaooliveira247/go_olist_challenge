@@ -100,4 +100,5 @@ func (controller *BookController) GetBookByID(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, book)
+	return
 }
