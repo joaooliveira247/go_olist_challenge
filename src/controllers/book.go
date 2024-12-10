@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/joaooliveira247/go_olist_challenge/src/dto"
 	"github.com/joaooliveira247/go_olist_challenge/src/models"
 	"github.com/joaooliveira247/go_olist_challenge/src/repositories"
@@ -81,4 +82,22 @@ func (controller *BookController) GetBooksByQuery(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, books)
 	return
+}
+
+func (controller *BookController) GetBookByID(ctx *gin.Context) {
+	id, err := uuid.Parse(ctx.Param("id"))
+
+	if err != nil || id == uuid.Nil {
+		ctx.JSON(response.InvalidID.StatusCode, response.InvalidID.Message)
+		return
+	}
+
+	book, err := controller.bookRepository.GetBookByID(id)
+
+	if err != nil {
+		ctx.JSON(response.UnableFetchEntity.StatusCode, response.UnableFetchEntity.Message)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, book)
 }
