@@ -407,3 +407,29 @@ func TestBookGetByQueryReturnUnableFetchEntity(t *testing.T) {
 		assert.JSONEq(t, `{"message": "unable to fetch entity"}`, w.Body.String())
 	}
 }
+
+func TestGetBookByIDSuccess(t *testing.T) {
+	mockBookRepository := new(mocks.BookRepository)
+	mockBookAuthorRepository := new(mocks.BookAuthorRepository)
+
+	Mbook := mocks.NewMockBookOut()
+
+	mockBookRepository.On("GetBookByID", Mbook.ID).Return(Mbook, nil)
+
+	controller := controllers.NewBookController(mockBookRepository, mockBookAuthorRepository)
+
+	w := httptest.NewRecorder()
+	gin.SetMode(gin.TestMode)
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request, _ = http.NewRequest(http.MethodGet, fmt.Sprintf("/books/%s", Mbook.ID), nil)
+	c.Params = gin.Params{{Key: "id", Value: fmt.Sprintf("%s", Mbook.ID)}}
+	c.Request.Header.Set("Content-Type", "application/json")
+
+	controller.GetBookByID(c)
+
+	expectedBook, _ := json.Marshal(Mbook)
+	
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.JSONEq(t, string(expectedBook), w.Body.String())
+}
