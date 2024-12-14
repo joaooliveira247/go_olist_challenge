@@ -181,7 +181,7 @@ func (_m *BookRepository) GetBooksByAuthorID(authorID uuid.UUID) ([]models.BookO
 }
 
 // Update provides a mock function with given fields: id, book
-func (_m *BookRepository) Update(id uuid.UUID, book *models.Book) error {
+func (_m *BookRepository) Update(id uuid.UUID, book *models.BookUpdate) error {
 	ret := _m.Called(id, book)
 
 	if len(ret) == 0 {
@@ -189,7 +189,7 @@ func (_m *BookRepository) Update(id uuid.UUID, book *models.Book) error {
 	}
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(uuid.UUID, *models.Book) error); ok {
+	if rf, ok := ret.Get(0).(func(uuid.UUID, *models.BookUpdate) error); ok {
 		r0 = rf(id, book)
 	} else {
 		r0 = ret.Error(0)
