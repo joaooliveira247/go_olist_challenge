@@ -16,7 +16,7 @@ type BookRepository interface {
 	GetBookByQuery(query map[string]interface{}) ([]models.BookOut, error)
 	GetBookByID(id uuid.UUID) (models.BookOut, error)
 	GetBooksByAuthorID(authorID uuid.UUID) ([]models.BookOut, error)
-	Update(id uuid.UUID, book *models.Book) error
+	Update(id uuid.UUID, book *models.BookUpdate) error
 	Delete(id uuid.UUID) error
 }
 
