@@ -20,4 +20,5 @@ var (
 	UnableConnectDatabase = Response{http.StatusInternalServerError, gin.H{"message": "unable to connect to database"}}
 	UnableCreateEntity    = Response{http.StatusInternalServerError, gin.H{"message": "unable to create entity"}}
 	UnableFetchEntity     = Response{http.StatusInternalServerError, gin.H{"message": "unable to fetch entity"}}
+	NothingToUpdate       = Response{http.StatusNotModified, gin.H{"message": "nothing to update"}}
 )
