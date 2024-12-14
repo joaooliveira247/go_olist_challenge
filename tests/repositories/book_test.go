@@ -115,7 +115,7 @@ func TestUpdateBookSuccess(t *testing.T) {
 	mock.ExpectCommit()
 
 	repository := repositories.NewBookRepository(gormDB)
-	err := repository.Update(bookID, &models.Book{
+	err := repository.Update(bookID, &models.BookUpdate{
 		Edition:         2,
 		PublicationYear: 2023,
 	})
@@ -138,7 +138,7 @@ func TestUpdateBookReturnNothingToUpdate(t *testing.T) {
 	mock.ExpectCommit()
 
 	repository := repositories.NewBookRepository(gormDB)
-	err := repository.Update(bookID, &models.Book{
+	err := repository.Update(bookID, &models.BookUpdate{
 		Edition:         2,
 		PublicationYear: 2023,
 	})
@@ -162,7 +162,7 @@ func TestUpdateBookReturnGenericError(t *testing.T) {
 	mock.ExpectRollback()
 
 	repository := repositories.NewBookRepository(gormDB)
-	err := repository.Update(bookID, &models.Book{
+	err := repository.Update(bookID, &models.BookUpdate{
 		Edition:         2,
 		PublicationYear: 2023,
 	})
