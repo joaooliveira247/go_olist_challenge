@@ -587,3 +587,56 @@ func TestGetBooksByAuthorIDUnableFetchEntity(t *testing.T) {
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
 	assert.JSONEq(t, `{"message": "unable to fetch entity"}`, w.Body.String())
 }
+
+func TestUpdateBookInfoSucess(t *testing.T) {
+	mockBookRepository := new(mocks.BookRepository)
+	mockBookAuthorRepository := new(mocks.BookAuthorRepository)
+
+	bookID := uuid.New()
+
+	testCases := []struct {
+		name  string
+		model *models.BookUpdate
+		body  string
+	}{
+		{
+			"Update Title",
+			&models.BookUpdate{Title: "Python Fluente"},
+			`{"title": "Python Fluente"}`,
+		},
+		{
+			"Update Edition",
+			&models.BookUpdate{Edition: 2},
+			`{"edition": 2}`,
+		},
+		{
+			"Update Publication Year",
+			&models.BookUpdate{PublicationYear: 2023},
+			`{"publication_year": 2023}`,
+		},
+		{
+			"Full Update",
+			&models.BookUpdate{Title: "Python Fluente", Edition: 2, PublicationYear: 2023},
+			`{"title": "Python Fluente", "edition": 2, "publication_year": 2023}`,
+		},
+	}
+
+	for _, testCase := range testCases {
+		mockBookRepository.On("Update", bookID, testCase.model).Return(nil)
+
+		controller := controllers.NewBookController(mockBookRepository, mockBookAuthorRepository)
+
+		w := httptest.NewRecorder()
+		gin.SetMode(gin.TestMode)
+
+		c, _ := gin.CreateTestContext(w)
+		c.Request, _ = http.NewRequest(http.MethodPut, fmt.Sprintf("/books/%s", bookID), bytes.NewBufferString(testCase.body))
+		c.Params = gin.Params{{Key: "id", Value: fmt.Sprintf("%s", bookID)}}
+		c.Request.Header.Set("Content-Type", "application/json")
+
+		controller.UpdateBook(c)
+
+		assert.Equal(t, http.StatusNoContent, w.Code)
+		assert.Empty(t, w.Body.String())
+	}
+}
