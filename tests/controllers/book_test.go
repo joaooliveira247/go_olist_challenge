@@ -601,22 +601,56 @@ func TestUpdateBookInfoSucess(t *testing.T) {
 	}{
 		{
 			"Update Title",
-			&models.BookUpdate{Title: "Python Fluente"},
+			&models.BookUpdate{
+				BookInfo: struct {
+					Title           string `json:"title,omitempty"`
+					Edition         uint8  `json:"edition,omitempty"`
+					PublicationYear uint   `json:"publication_year,omitempty"`
+				}{
+					Title: "Python Fluente",
+				},
+			},
 			`{"title": "Python Fluente"}`,
 		},
 		{
 			"Update Edition",
-			&models.BookUpdate{Edition: 2},
+			&models.BookUpdate{
+				BookInfo: struct {
+					Title           string `json:"title,omitempty"`
+					Edition         uint8  `json:"edition,omitempty"`
+					PublicationYear uint   `json:"publication_year,omitempty"`
+				}{
+					Edition: 2,
+				},
+			},
 			`{"edition": 2}`,
 		},
 		{
 			"Update Publication Year",
-			&models.BookUpdate{PublicationYear: 2023},
+			&models.BookUpdate{
+				BookInfo: struct {
+					Title           string `json:"title,omitempty"`
+					Edition         uint8  `json:"edition,omitempty"`
+					PublicationYear uint   `json:"publication_year,omitempty"`
+				}{
+					PublicationYear: 2023,
+				},
+			},
 			`{"publication_year": 2023}`,
 		},
 		{
 			"Full Update",
-			&models.BookUpdate{Title: "Python Fluente", Edition: 2, PublicationYear: 2023},
+			&models.BookUpdate{
+				BookInfo: struct {
+					Title           string `json:"title,omitempty"`
+					Edition         uint8  `json:"edition,omitempty"`
+					PublicationYear uint   `json:"publication_year,omitempty"`
+				}{
+					Title:           "Python Fluente",
+					Edition:         2,
+					PublicationYear: 2023,
+				},
+			},
 			`{"title": "Python Fluente", "edition": 2, "publication_year": 2023}`,
 		},
 	}
