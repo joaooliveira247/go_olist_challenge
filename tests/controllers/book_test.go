@@ -675,6 +675,41 @@ func TestUpdateBookInfoSucess(t *testing.T) {
 	}
 }
 
+func TestUpdateBookSingleAuthorIDSuccess(t *testing.T) {
+	mockBookRepository := new(mocks.BookRepository)
+	mockBookAuthorRepository := new(mocks.BookAuthorRepository)
+
+	bookID := uuid.New()
+
+	authors := []uuid.UUID{
+		uuid.New(),
+	}
+
+	mockBookAuthorRepository.On("Delete", bookID).Return(nil)
+	mockBookAuthorRepository.On("Create", &models.BookAuthor{
+		BookID: bookID, AuthorID: authors[0],
+	}).Return(nil)
+
+	body := fmt.Sprintf(`{"authors": ["%s"]}`, authors[0])
+
+	controller := controllers.NewBookController(mockBookRepository, mockBookAuthorRepository)
+
+	w := httptest.NewRecorder()
+	gin.SetMode(gin.TestMode)
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request, _ = http.NewRequest(http.MethodPut, fmt.Sprintf("/books/%s", bookID), bytes.NewBufferString(body))
+	c.Params = gin.Params{
+		{Key: "id", Value: bookID.String()},
+	}
+	c.Header("Content-Type", "application/json")
+
+	controller.UpdateBook(c)
+
+	assert.Equal(t, http.StatusNoContent, w.Code)
+	assert.Empty(t, w.Body.String())
+}
+
 func TestUpdateBookDoubleAuthorIDSuccess(t *testing.T) {
 	mockBookRepository := new(mocks.BookRepository)
 	mockBookAuthorRepository := new(mocks.BookAuthorRepository)
