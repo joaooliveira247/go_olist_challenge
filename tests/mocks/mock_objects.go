@@ -66,3 +66,18 @@ func NewMockBooks() []models.BookOut {
 		},
 	}
 }
+
+func NewMockUpdateBook() models.BookUpdate {
+	return models.BookUpdate{
+		BookInfo: struct {
+			Title           string `json:"title,omitempty"`
+			Edition         uint8  `json:"edition,omitempty"`
+			PublicationYear uint   `json:"publication_year,omitempty"`
+		}{
+			Title:           "The Rust Programming Language",
+			Edition:         1,
+			PublicationYear: 2018,
+		},
+		AuthorsID: []uuid.UUID{uuid.New(), uuid.New()},
+	}
+}
