@@ -115,7 +115,7 @@ func (repository *bookRepository) GetBooksByAuthorID(authorID uuid.UUID) ([]mode
 }
 
 func (repository *bookRepository) Update(id uuid.UUID, book *models.BookUpdate) error {
-	result := repository.db.Model(&models.Book{}).Where("id = ?", id).Updates(&models.Book{Title: book.Title, Edition: book.Edition, PublicationYear: book.PublicationYear})
+	result := repository.db.Model(&models.Book{}).Where("id = ?", id).Updates(&models.Book{Title: book.BookInfo.Title, Edition: book.BookInfo.Edition, PublicationYear: book.BookInfo.PublicationYear})
 
 	if err := result.Error; err != nil {
 		return err
