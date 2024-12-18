@@ -1,6 +1,8 @@
 package models
 
 import (
+	"reflect"
+
 	"github.com/google/uuid"
 	"github.com/lib/pq"
 )
@@ -23,8 +25,14 @@ type BookOut struct {
 }
 
 type BookUpdate struct {
-	Title           string      `json:"title,omitempty"`
-	Edition         uint8       `json:"edition,omitempty"`
-	PublicationYear uint        `json:"publication_year,omitempty"`
-	AuthorsID       []uuid.UUID `json:"authors,omitempty" binding:"dive,uuid"`
+	BookInfo struct {
+		Title           string `json:"title,omitempty"`
+		Edition         uint8  `json:"edition,omitempty"`
+		PublicationYear uint   `json:"publication_year,omitempty"`
+	}
+	AuthorsID []uuid.UUID `json:"authors,omitempty" binding:"dive,uuid"`
+}
+
+func (model *BookUpdate) IsEmpty() bool {
+	return reflect.DeepEqual(model.BookInfo, reflect.Zero(reflect.TypeOf(model.BookInfo)).Interface())
 }
