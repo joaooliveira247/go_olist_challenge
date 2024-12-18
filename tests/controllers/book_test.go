@@ -746,3 +746,39 @@ func TestUpdateBookDoubleAuthorIDSuccess(t *testing.T) {
 	assert.Equal(t, http.StatusNoContent, w.Code)
 	assert.Empty(t, w.Body.String())
 }
+
+func TestUpdateBookFullSucess(t *testing.T) {
+	mockBookRepository := new(mocks.BookRepository)
+	mockBookAuthorRepository := new(mocks.BookAuthorRepository)
+
+	bookID := uuid.New()
+
+	MUpdate := mocks.NewMockUpdateBook()
+
+	mockBookRepository.On("Update", MUpdate).Return(nil)
+	mockBookAuthorRepository.On("Delete", bookID).Return(nil)
+	for _, author := range MUpdate.AuthorsID {
+		mockBookAuthorRepository.On("Create", &models.BookAuthor{
+			BookID: bookID, AuthorID: author,
+		}).Return(nil)
+	}
+
+	body := fmt.Sprintf(`{"title": "%s","edition": %d,"publication_year": %d,"authors": ["%s", "%s"]}`, MUpdate.BookInfo.Title, MUpdate.BookInfo.Edition, MUpdate.BookInfo.PublicationYear, MUpdate.AuthorsID[0], MUpdate.AuthorsID[1])
+
+	controller := controllers.NewBookController(mockBookRepository, mockBookAuthorRepository)
+
+	w := httptest.NewRecorder()
+	gin.SetMode(gin.TestMode)
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request, _ = http.NewRequest(http.MethodPut, fmt.Sprintf("/books/%s", bookID), bytes.NewBufferString(body))
+	c.Params = gin.Params{
+		{Key: "id", Value: bookID.String()},
+	}
+	c.Header("Content-Type", "application/json")
+
+	controller.UpdateBook(c)
+
+	assert.Equal(t, http.StatusNoContent, w.Code)
+	assert.Empty(t, w.Body.String())
+}
