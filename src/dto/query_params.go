@@ -10,9 +10,9 @@ type AuthorQueryParam struct {
 }
 
 type BookQueryParam struct {
-	Title           string `form:"title,omitempty" json:"title,omitempty"`
-	Edition         uint8  `form:"edition,omitempty" json:"edition,omitempty"`
-	PublicationYear uint   `form:"publicationYear,omitempty" json:"publication_year,omitempty"`
+	Title           string `form:"title,omitempty"`
+	Edition         uint8  `form:"edition,omitempty"`
+	PublicationYear uint   `form:"publicationYear,omitempty"`
 }
 
 func (query *BookQueryParam) AsQuery() string {
