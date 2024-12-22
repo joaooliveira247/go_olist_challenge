@@ -56,12 +56,7 @@ func (controller *BookController) GetBooksByQuery(ctx *gin.Context) {
 		return
 	}
 
-	queries, err := bookQuery.AsQuery()
-
-	if err != nil {
-		ctx.JSON(response.InvalidParam.StatusCode, response.InvalidParam.Message)
-		return
-	}
+	queries := bookQuery.AsQuery()
 
 	if len(queries) > 0 {
 		books, err := controller.bookRepository.GetBookByQuery(queries)
