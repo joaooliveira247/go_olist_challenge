@@ -1,7 +1,8 @@
 package dto
 
 import (
-	"encoding/json"
+	"fmt"
+	"strings"
 )
 
 type AuthorQueryParam struct {
@@ -14,18 +15,18 @@ type BookQueryParam struct {
 	PublicationYear uint   `form:"publicationYear,omitempty" json:"publication_year,omitempty"`
 }
 
-func (query *BookQueryParam) AsQuery() (map[string]interface{}, error) {
-	bjson, err := json.Marshal(query)
+func (query *BookQueryParam) AsQuery() string {
+	whereClauses := []string{}
 
-	if err != nil {
-		return nil, err
+	if query.Title != "" {
+		whereClauses = append(whereClauses, fmt.Sprintf(`b.title = %s`, query.Title))
+	}
+	if query.Edition != 0 {
+		whereClauses = append(whereClauses, fmt.Sprintf(`b.edition = %d`, query.Edition))
+	}
+	if query.PublicationYear != 0 {
+		whereClauses = append(whereClauses, fmt.Sprintf(`b.publication_year = %d`, query.PublicationYear))
 	}
 
-	var queries map[string]interface{}
-
-	if err := json.Unmarshal(bjson, &queries); err != nil {
-		return nil, err
-	}
-
-	return queries, nil
+	return strings.Join(whereClauses, " AND ")
 }
