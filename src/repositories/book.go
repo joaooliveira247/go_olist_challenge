@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/google/uuid"
 	custom "github.com/joaooliveira247/go_olist_challenge/src/errors"
@@ -13,7 +12,7 @@ import (
 type BookRepository interface {
 	Create(book *models.Book) (uuid.UUID, error)
 	GetAll() ([]models.BookOut, error)
-	GetBookByQuery(query map[string]interface{}) ([]models.BookOut, error)
+	GetBookByQuery(query string) ([]models.BookOut, error)
 	GetBookByID(id uuid.UUID) (models.BookOut, error)
 	GetBooksByAuthorID(authorID uuid.UUID) ([]models.BookOut, error)
 	Update(id uuid.UUID, book *models.BookUpdate) error
@@ -54,26 +53,14 @@ func (repository *bookRepository) GetAll() ([]models.BookOut, error) {
 	return books, nil
 }
 
-func (repository *bookRepository) GetBookByQuery(query map[string]interface{}) ([]models.BookOut, error) {
+func (repository *bookRepository) GetBookByQuery(query string) ([]models.BookOut, error) {
 	var books []models.BookOut
-
-	var whereClauses []string
-
-	for k, v := range query {
-		var formatString string
-		switch v.(type) {
-		case uint, uint8:
-			formatString = "b.%s = %d"
-		default:
-			formatString = "b.%s = %s"
-		}
-		whereClauses = append(whereClauses, fmt.Sprintf(formatString, k, v))
-	}
+	fmt.Println("****QUERY STRING DEBUG:****", query)
 
 	rawQuery := `
 		SELECT b.id, b.title, b.edition, b.publication_year, array_agg(a.name) AS authors FROM book_author ba INNER JOIN books b ON ba.book_id = b.id INNER JOIN authors a ON ba.author_id = a.id WHERE %s GROUP BY b.id;`
 
-	rawQuery = fmt.Sprintf(rawQuery, strings.Join(whereClauses, " AND "))
+	rawQuery = fmt.Sprintf(rawQuery, query)
 
 	result := repository.db.Raw(rawQuery).Scan(&books)
 
