@@ -1,11 +1,13 @@
 package repositories_test
 
 import (
+	"fmt"
 	"regexp"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/google/uuid"
+	"github.com/joaooliveira247/go_olist_challenge/src/dto"
 	"github.com/joaooliveira247/go_olist_challenge/src/errors"
 	"github.com/joaooliveira247/go_olist_challenge/src/models"
 	"github.com/joaooliveira247/go_olist_challenge/src/repositories"
@@ -116,8 +118,15 @@ func TestUpdateBookSuccess(t *testing.T) {
 
 	repository := repositories.NewBookRepository(gormDB)
 	err := repository.Update(bookID, &models.BookUpdate{
-		Edition:         2,
-		PublicationYear: 2023,
+		BookInfo: struct {
+			Title           string `json:"title,omitempty"`
+			Edition         uint8  `json:"edition,omitempty"`
+			PublicationYear uint   `json:"publication_year,omitempty"`
+		}{
+			Edition:         2,
+			PublicationYear: 2023,
+		},
+		AuthorsID: nil,
 	})
 
 	assert.Nil(t, err)
@@ -139,8 +148,15 @@ func TestUpdateBookReturnNothingToUpdate(t *testing.T) {
 
 	repository := repositories.NewBookRepository(gormDB)
 	err := repository.Update(bookID, &models.BookUpdate{
-		Edition:         2,
-		PublicationYear: 2023,
+		BookInfo: struct {
+			Title           string `json:"title,omitempty"`
+			Edition         uint8  `json:"edition,omitempty"`
+			PublicationYear uint   `json:"publication_year,omitempty"`
+		}{
+			Edition:         2,
+			PublicationYear: 2023,
+		},
+		AuthorsID: nil,
 	})
 
 	assert.Error(t, err)
@@ -163,8 +179,15 @@ func TestUpdateBookReturnGenericError(t *testing.T) {
 
 	repository := repositories.NewBookRepository(gormDB)
 	err := repository.Update(bookID, &models.BookUpdate{
-		Edition:         2,
-		PublicationYear: 2023,
+		BookInfo: struct {
+			Title           string `json:"title,omitempty"`
+			Edition         uint8  `json:"edition,omitempty"`
+			PublicationYear uint   `json:"publication_year,omitempty"`
+		}{
+			Edition:         2,
+			PublicationYear: 2023,
+		},
+		AuthorsID: nil,
 	})
 
 	assert.Error(t, err)
@@ -233,8 +256,10 @@ func TestGetBookByOneQuerySuccess(t *testing.T) {
 
 	mock.ExpectQuery(regexp.QuoteMeta(`SELECT b.id, b.title, b.edition, b.publication_year, array_agg(a.name) AS authors FROM book_author ba INNER JOIN books b ON ba.book_id = b.id INNER JOIN authors a ON ba.author_id = a.id WHERE b.title = Python Fluente GROUP BY b.id;`)).WillReturnRows(rows)
 
+	query := dto.BookQueryParam{Title: "Python Fluente"}
+
 	repository := repositories.NewBookRepository(gormDB)
-	books, err := repository.GetBookByQuery(map[string]interface{}{"title": "Python Fluente"})
+	books, err := repository.GetBookByQuery(query.AsQuery())
 
 	assert.Nil(t, err)
 	assert.Equal(t, MBooks, books)
@@ -255,8 +280,10 @@ func TestGetBookByQuerySuccess(t *testing.T) {
 
 	mock.ExpectQuery(regexp.QuoteMeta(`SELECT b.id, b.title, b.edition, b.publication_year, array_agg(a.name) AS authors FROM book_author ba INNER JOIN books b ON ba.book_id = b.id INNER JOIN authors a ON ba.author_id = a.id WHERE b.title = the Rust Programming Language AND b.edition = 1 AND b.publication_year = 2018 GROUP BY b.id;`)).WillReturnRows(rows)
 
+	query := dto.BookQueryParam{Title: MBook.Title, Edition: MBook.Edition, PublicationYear: MBook.PublicationYear}
+
 	repository := repositories.NewBookRepository(gormDB)
-	book, err := repository.GetBookByQuery(map[string]interface{}{"title": MBook.Title, "edition": MBook.Edition, "publication_year": MBook.PublicationYear})
+	book, err := repository.GetBookByQuery(query.AsQuery())
 
 	assert.Nil(t, err)
 	assert.Len(t, book, 1)
@@ -271,10 +298,16 @@ func TestGetBookByQueryReturnGenericError(t *testing.T) {
 		db.Close()
 	}()
 
-	mock.ExpectQuery(regexp.QuoteMeta(`SELECT b.id, b.title, b.edition, b.publication_year, array_agg(a.name) AS authors FROM book_author ba INNER JOIN books b ON ba.book_id = b.id INNER JOIN authors a ON ba.author_id = a.id WHERE b.title = the Rust Programming Language AND b.edition = 1 AND b.publication_year = 2018 GROUP BY b.id;`)).WillReturnError(&errors.BookGenericError)
+	query := dto.BookQueryParam{
+		Title:           "the Rust Programming Language",
+		Edition:         1,
+		PublicationYear: 2018,
+	}
+
+	mock.ExpectQuery(regexp.QuoteMeta(fmt.Sprintf(`SELECT b.id, b.title, b.edition, b.publication_year, array_agg(a.name) AS authors FROM book_author ba INNER JOIN books b ON ba.book_id = b.id INNER JOIN authors a ON ba.author_id = a.id WHERE b.title = the Rust Programming Language AND b.edition = 1 AND b.publication_year = 2018 GROUP BY b.id;`))).WillReturnError(&errors.BookGenericError)
 
 	repository := repositories.NewBookRepository(gormDB)
-	book, err := repository.GetBookByQuery(map[string]interface{}{"title": "the Rust Programming Language", "edition": uint8(1), "publication_year": uint(2018)})
+	book, err := repository.GetBookByQuery(query.AsQuery())
 
 	assert.Nil(t, book)
 	assert.Error(t, err)
