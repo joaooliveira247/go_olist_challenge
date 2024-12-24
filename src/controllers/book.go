@@ -1,12 +1,14 @@
 package controllers
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/joaooliveira247/go_olist_challenge/src/dto"
+	custom "github.com/joaooliveira247/go_olist_challenge/src/errors"
 	"github.com/joaooliveira247/go_olist_challenge/src/models"
 	"github.com/joaooliveira247/go_olist_challenge/src/repositories"
 	"github.com/joaooliveira247/go_olist_challenge/src/response"
@@ -58,7 +60,7 @@ func (controller *BookController) GetBooksByQuery(ctx *gin.Context) {
 
 	queries := bookQuery.AsQuery()
 
-	if len(queries) > 0 {
+	if !bookQuery.IsEmpty() {
 		books, err := controller.bookRepository.GetBookByQuery(queries)
 		if err != nil {
 			ctx.JSON(response.UnableFetchEntity.StatusCode, response.UnableFetchEntity.Message)
