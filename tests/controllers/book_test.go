@@ -244,39 +244,37 @@ func TestBookGetByManyQueriesReturnSucess(t *testing.T) {
 	testCases := []struct {
 		name       string
 		url        string
-		query      map[string]interface{}
+		query      string
 		mockResult []models.BookOut
 	}{
 		{
 			"Title Param Return Two Books",
 			"/books/?title=Python Fluente",
-			map[string]interface{}{"title": "Python Fluente"},
+			"b.title = Python Fluente",
 			Mbooks[:2],
 		},
 		{
 			"Edition Param Return Two Books",
 			"/books/?edition=1",
-			map[string]interface{}{"edition": float64(1)},
+			"b.edition = 1",
 			[]models.BookOut{Mbooks[1], Mbooks[3]},
 		},
 		{
 			"publicationYear Param Return Two Books",
 			"/books/?publicationYear=2015",
-			map[string]interface{}{
-				"publication_year": float64(2015),
-			},
+			"b.publication_year = 2015",
 			[]models.BookOut{Mbooks[1], Mbooks[2]},
 		},
 		{
 			"Edition and PublicatioYear Return One Book",
 			"/books/?edition=2&publicationYear=2015",
-			map[string]interface{}{"edition": float64(2), "publication_year": float64(2015)},
+			"b.edition = 2 AND b.publication_year = 2015",
 			[]models.BookOut{Mbooks[1]},
 		},
 		{
 			"Title, Edition and PublicationYear Return One Book",
 			"/books/?title=The Go Programming Language&edition=2&publicationYear=2015",
-			map[string]interface{}{"title": "The Go Programming Language", "edition": float64(2), "publication_year": float64(2015)},
+			"b.title = The Go Programming Language AND b.edition = 2 AND b.publication_year = 2015",
 			[]models.BookOut{Mbooks[1]},
 		},
 	}
@@ -363,21 +361,21 @@ func TestBookGetByQueryReturnUnableFetchEntity(t *testing.T) {
 	testCases := []struct {
 		name       string
 		methodName string
-		args       interface{}
+		args       string
 		error      error
 		url        string
 	}{
 		{
 			"Empty query but error in GetAll",
 			"GetAll",
-			nil,
+			"",
 			&errors.BookGenericError,
 			"/books/",
 		},
 		{
 			"Method has query but error in GetBookByQuery",
 			"GetBookByQuery",
-			map[string]interface{}{"title": "Python Fluente"},
+			"b.title = Python Fluente",
 			&errors.BookGenericError,
 			"/books/?title=Python Fluente",
 		},
@@ -386,7 +384,7 @@ func TestBookGetByQueryReturnUnableFetchEntity(t *testing.T) {
 	for _, testCase := range testCases {
 		mockBookRepository.Calls = nil
 
-		if testCase.args != nil {
+		if testCase.args != "" {
 			mockBookRepository.On(testCase.methodName, testCase.args).Return(nil, testCase.error)
 		} else {
 			mockBookRepository.On(testCase.methodName).Return(nil, testCase.error)
