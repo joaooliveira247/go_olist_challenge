@@ -30,3 +30,7 @@ func (query *BookQueryParam) AsQuery() string {
 
 	return strings.Join(whereClauses, " AND ")
 }
+
+func (query *BookQueryParam) IsEmpty() bool {
+	return query.Title == "" && query.Edition == 0 && query.PublicationYear == 0
+}
