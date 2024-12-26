@@ -780,3 +780,45 @@ func TestUpdateBookFullSucess(t *testing.T) {
 	assert.Equal(t, http.StatusNoContent, w.Code)
 	assert.Empty(t, w.Body.String())
 }
+
+func TestUpdateBookReturnInvalidID(t *testing.T) {
+	mockBookRepository := new(mocks.BookRepository)
+	mockBookAuthorRepository := new(mocks.BookAuthorRepository)
+
+	testCases := []struct {
+		name string
+		url  string
+		id   string
+	}{
+		{
+			"invalid uuid",
+			"/book/123",
+			"123",
+		},
+		{
+			"empty uuid",
+			fmt.Sprintf(`/book/%s`, uuid.Nil),
+			uuid.Nil.String(),
+		},
+	}
+
+	for _, testCase := range testCases {
+		controller := controllers.NewBookController(mockBookRepository, mockBookAuthorRepository)
+
+		w := httptest.NewRecorder()
+
+		gin.SetMode(gin.TestMode)
+
+		c, _ := gin.CreateTestContext(w)
+		c.Request, _ = http.NewRequest(http.MethodPut, testCase.url, nil)
+		c.Params = gin.Params{
+			{Key: "id", Value: testCase.id},
+		}
+		c.Header("Content-Type", "application/json")
+
+		controller.UpdateBook(c)
+
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+		assert.JSONEq(t, `{"message": "invalid id"}`, w.Body.String())
+	}
+}
