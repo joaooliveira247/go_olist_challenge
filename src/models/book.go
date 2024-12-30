@@ -24,12 +24,14 @@ type BookOut struct {
 	AuthorsName pq.StringArray `json:"authors" gorm:"type:text[];column:authors"`
 }
 
+type BookInfo struct {
+	Title           string `json:"title,omitempty"`
+	Edition         uint8  `json:"edition,omitempty"`
+	PublicationYear uint   `json:"publication_year,omitempty"`
+}
+
 type BookUpdate struct {
-	BookInfo struct {
-		Title           string `json:"title,omitempty"`
-		Edition         uint8  `json:"edition,omitempty"`
-		PublicationYear uint   `json:"publication_year,omitempty"`
-	}
+	BookInfo
 	AuthorsID []uuid.UUID `json:"authors,omitempty" binding:"dive,uuid"`
 }
 
