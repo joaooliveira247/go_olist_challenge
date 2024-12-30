@@ -806,3 +806,79 @@ func TestUpdateBookReturnInvalidID(t *testing.T) {
 		assert.JSONEq(t, `{"message": "invalid id"}`, w.Body.String())
 	}
 }
+
+func TestUpdateBookReturnInvalidParam(t *testing.T) {
+	mockBookRepository := new(mocks.BookRepository)
+	mockBookAuthorRepository := new(mocks.BookAuthorRepository)
+
+	testCases := []struct {
+		name string
+		body string
+	}{
+		{
+			"without title",
+			`{"title": }`,
+		},
+		{
+			"edition lt 0",
+			`{"edition": -1}`,
+		},
+		{
+			"edition gt uint8",
+			`{"edition": 256}`,
+		},
+		{
+			"without edition",
+			`{"edition": }`,
+		},
+		{
+			"publication year lt 0",
+			`{"publication_year": -1}`,
+		},
+		{
+			"without publication_year",
+			`{"publication_year": }`,
+		},
+		{
+			"one uuid invalid",
+			`{"authors": [123]}`,
+		},
+		{
+			"uuid nil",
+			fmt.Sprintf(`{"authors": [%s]}`, uuid.Nil.String()),
+		},
+		{
+			"two uuid but one invalid",
+			fmt.Sprintf(`{"authors": [%d, %s]}`, 123, uuid.New().String()),
+		},
+		{
+			"two uuid but one nil",
+			fmt.Sprintf(`{"authors": [%s, %s]}`, uuid.Nil.String(), uuid.New().String()),
+		},
+		{
+			"authors empty",
+			`{"authors": }`,
+		},
+	}
+
+	bookID := uuid.New()
+
+	for _, testCase := range testCases {
+		controller := controllers.NewBookController(mockBookRepository, mockBookAuthorRepository)
+
+		w := httptest.NewRecorder()
+		gin.SetMode(gin.TestMode)
+
+		c, _ := gin.CreateTestContext(w)
+
+		c.Request, _ = http.NewRequest(http.MethodPut, fmt.Sprintf("/books/%s", bookID.String()), bytes.NewBufferString(testCase.body))
+		c.Params = gin.Params{
+			{Key: "id", Value: bookID.String()},
+		}
+		c.Request.Header.Set("Content-Type", "application/json")
+
+		controller.UpdateBook(c)
+
+		assert.Equal(t, http.StatusUnprocessableEntity, w.Code)
+	}
+}
