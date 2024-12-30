@@ -600,11 +600,7 @@ func TestUpdateBookInfoSucess(t *testing.T) {
 		{
 			"Update Title",
 			&models.BookUpdate{
-				BookInfo: struct {
-					Title           string `json:"title,omitempty"`
-					Edition         uint8  `json:"edition,omitempty"`
-					PublicationYear uint   `json:"publication_year,omitempty"`
-				}{
+				BookInfo: models.BookInfo{
 					Title: "Python Fluente",
 				},
 			},
@@ -613,11 +609,7 @@ func TestUpdateBookInfoSucess(t *testing.T) {
 		{
 			"Update Edition",
 			&models.BookUpdate{
-				BookInfo: struct {
-					Title           string `json:"title,omitempty"`
-					Edition         uint8  `json:"edition,omitempty"`
-					PublicationYear uint   `json:"publication_year,omitempty"`
-				}{
+				BookInfo: models.BookInfo{
 					Edition: 2,
 				},
 			},
@@ -626,11 +618,7 @@ func TestUpdateBookInfoSucess(t *testing.T) {
 		{
 			"Update Publication Year",
 			&models.BookUpdate{
-				BookInfo: struct {
-					Title           string `json:"title,omitempty"`
-					Edition         uint8  `json:"edition,omitempty"`
-					PublicationYear uint   `json:"publication_year,omitempty"`
-				}{
+				BookInfo: models.BookInfo{
 					PublicationYear: 2023,
 				},
 			},
@@ -639,11 +627,7 @@ func TestUpdateBookInfoSucess(t *testing.T) {
 		{
 			"Full Update",
 			&models.BookUpdate{
-				BookInfo: struct {
-					Title           string `json:"title,omitempty"`
-					Edition         uint8  `json:"edition,omitempty"`
-					PublicationYear uint   `json:"publication_year,omitempty"`
-				}{
+				BookInfo: models.BookInfo{
 					Title:           "Python Fluente",
 					Edition:         2,
 					PublicationYear: 2023,
@@ -753,7 +737,7 @@ func TestUpdateBookFullSucess(t *testing.T) {
 
 	MUpdate := mocks.NewMockUpdateBook()
 
-	mockBookRepository.On("Update", MUpdate).Return(nil)
+	mockBookRepository.On("Update", bookID, &MUpdate).Return(nil)
 	mockBookAuthorRepository.On("Delete", bookID).Return(nil)
 	for _, author := range MUpdate.AuthorsID {
 		mockBookAuthorRepository.On("Create", &models.BookAuthor{
