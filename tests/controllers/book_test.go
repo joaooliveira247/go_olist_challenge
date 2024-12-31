@@ -883,3 +883,61 @@ func TestUpdateBookReturnInvalidParam(t *testing.T) {
 		assert.JSONEq(t, `{"message": "request body invalid"}`, w.Body.String())
 	}
 }
+
+func TestUpdateBookInfoReturnError(t *testing.T) {
+	testCases := []struct {
+		name            string
+		errorReturn     error
+		body            string
+		ExpectedCode    int
+		ExpectedMessage string
+	}{
+		{
+			"update return nothing to update",
+			&errors.BookNothingToUpdate,
+			`{"edition": 1}`,
+			http.StatusNotModified,
+			"",
+		},
+		{
+			"update return generic error",
+			&errors.BookGenericError,
+			`{"edition": 1}`,
+			http.StatusInternalServerError,
+			`{"message": "unable to fetch entity"}`,
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			mockBookRepository := new(mocks.BookRepository)
+			mockBookAuthorRepository := new(mocks.BookAuthorRepository)
+
+			bookID := uuid.New()
+
+			mockBookRepository.On("Update", mock.Anything, mock.Anything).Return(testCase.errorReturn)
+
+			controller := controllers.NewBookController(mockBookRepository, mockBookAuthorRepository)
+
+			w := httptest.NewRecorder()
+			gin.SetMode(gin.TestMode)
+
+			c, _ := gin.CreateTestContext(w)
+
+			c.Request, _ = http.NewRequest(http.MethodPut, fmt.Sprintf("/books/%s", bookID.String()), bytes.NewBufferString(testCase.body))
+			c.Params = gin.Params{
+				{Key: "id", Value: bookID.String()},
+			}
+			c.Request.Header.Set("Content-Type", "application/json")
+
+			controller.UpdateBook(c)
+
+			assert.Equal(t, testCase.ExpectedCode, w.Code)
+			if testCase.ExpectedMessage != "" {
+				assert.JSONEq(t, testCase.ExpectedMessage, w.Body.String())
+			} else {
+				assert.Empty(t, w.Body.String())
+			}
+		})
+	}
+}
