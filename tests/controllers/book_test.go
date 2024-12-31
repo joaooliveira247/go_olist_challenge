@@ -880,5 +880,6 @@ func TestUpdateBookReturnInvalidParam(t *testing.T) {
 		controller.UpdateBook(c)
 
 		assert.Equal(t, http.StatusUnprocessableEntity, w.Code)
+		assert.JSONEq(t, `{"message": "request body invalid"}`, w.Body.String())
 	}
 }
