@@ -118,3 +118,49 @@ func (controller *BookController) GetBookByAuthorID(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, books)
 	return
 }
+
+func (controller *BookController) UpdateBook(ctx *gin.Context) {
+	id, err := uuid.Parse(ctx.Param("id"))
+
+	if err != nil || id == uuid.Nil {
+		ctx.JSON(response.InvalidID.StatusCode, response.InvalidID.Message)
+		return
+	}
+
+	var bookUpdate models.BookUpdate
+
+	if err := ctx.ShouldBindBodyWithJSON(&bookUpdate); err != nil {
+		ctx.JSON(response.InvalidRequestBody.StatusCode, response.InvalidRequestBody.Message)
+		return
+	}
+
+	if !bookUpdate.IsEmpty() {
+		if err := controller.bookRepository.Update(id, &bookUpdate); err != nil {
+			if errors.Is(err, &custom.BookNothingToUpdate) {
+				ctx.JSON(response.NothingToUpdate.StatusCode, nil)
+				return
+			}
+			ctx.JSON(response.UnableFetchEntity.StatusCode, response.UnableFetchEntity.Message)
+			return
+		}
+	}
+
+	if len(bookUpdate.AuthorsID) > 0 {
+		if err := controller.bookAuthorRepository.Delete(id); err != nil {
+			ctx.JSON(response.UnableFetchEntity.StatusCode, response.UnableFetchEntity.Message)
+			return
+		}
+
+		for _, authorID := range bookUpdate.AuthorsID {
+			if err := controller.bookAuthorRepository.Create(&models.BookAuthor{
+				BookID: id, AuthorID: authorID,
+			}); err != nil {
+				ctx.JSON(response.UnableFetchEntity.StatusCode, response.UnableFetchEntity.Message)
+				return
+			}
+		}
+	}
+
+	ctx.JSON(http.StatusNoContent, nil)
+	return
+}
