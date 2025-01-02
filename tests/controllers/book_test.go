@@ -998,3 +998,42 @@ func TestUpdateBookWhenCreateRefReturnError(t *testing.T) {
 	assert.Equal(t, http.StatusInternalServerError, w.Code)
 	assert.JSONEq(t, `{"message": "unable to fetch entity"}`, w.Body.String())
 }
+
+func TestDeleteBookReturnInvalidID(t *testing.T) {
+
+	testCases := []struct {
+		name string
+		id   string
+	}{
+		{
+			"invalid id",
+			"123",
+		},
+		{
+			"empty id",
+			uuid.Nil.String(),
+		},
+	}
+
+	for _, testCase := range testCases {
+		mockBookRepository := new(mocks.BookRepository)
+		mockBookAuthorRepository := new(mocks.BookAuthorRepository)
+
+		controller := controllers.NewBookController(mockBookRepository, mockBookAuthorRepository)
+
+		w := httptest.NewRecorder()
+		gin.SetMode(gin.TestMode)
+
+		c, _ := gin.CreateTestContext(w)
+		c.Request, _ = http.NewRequest(http.MethodDelete, fmt.Sprintf(`/books/%s`, testCase.id), nil)
+		c.Params = gin.Params{
+			{Key: "id", Value: testCase.id},
+		}
+		c.Header("Content-Tyoe", "application/json")
+
+		controller.UpdateBook(c)
+
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+		assert.JSONEq(t, `{"message": "invalid id"}`, w.Body.String())
+	}
+}
