@@ -1037,3 +1037,51 @@ func TestDeleteBookReturnInvalidID(t *testing.T) {
 		assert.JSONEq(t, `{"message": "invalid id"}`, w.Body.String())
 	}
 }
+
+func TestDeleteBookReturnError(t *testing.T) {
+	testCases := []struct {
+		name        string
+		message     string
+		returnError error
+		status      int
+	}{
+		{
+			"return NotModified",
+			"",
+			&errors.BookNotFound,
+			http.StatusNotModified,
+		},
+		{
+			"return InternalServerError",
+			`{"message":"unable to fetch entity"}`,
+			&errors.BookGenericError,
+			http.StatusInternalServerError,
+		},
+	}
+
+	for _, testCase := range testCases {
+		bookID := uuid.New()
+
+		mockBookRepository := new(mocks.BookRepository)
+		mockBookAuthorRepository := new(mocks.BookAuthorRepository)
+
+		mockBookRepository.On("Delete", bookID).Return(testCase.returnError)
+
+		controller := controllers.NewBookController(mockBookRepository, mockBookAuthorRepository)
+
+		w := httptest.NewRecorder()
+		gin.SetMode(gin.TestMode)
+
+		c, _ := gin.CreateTestContext(w)
+		c.Request, _ = http.NewRequest(http.MethodDelete, fmt.Sprintf(`/books/%s`, bookID.String()), nil)
+		c.Params = gin.Params{
+			{Key: "id", Value: bookID.String()},
+		}
+		c.Header("Content-Tyoe", "application/json")
+
+		controller.DeleteBook(c)
+
+		assert.Equal(t, testCase.status, w.Code)
+		assert.Equal(t, testCase.message, w.Body.String())
+	}
+}
