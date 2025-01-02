@@ -941,3 +941,31 @@ func TestUpdateBookInfoReturnError(t *testing.T) {
 		})
 	}
 }
+
+func TestUpdateBookWhenDeleteRefReturnError(t *testing.T) {
+	mockBookRepository := new(mocks.BookRepository)
+	mockBookAuthorRepository := new(mocks.BookAuthorRepository)
+
+	bookID := uuid.New()
+
+	body := fmt.Sprintf(`{"authors": ["%s"]}`, bookID.String())
+
+	mockBookAuthorRepository.On("Delete", bookID).Return(&errors.BookAuthorGenericError)
+
+	controller := controllers.NewBookController(mockBookRepository, mockBookAuthorRepository)
+
+	w := httptest.NewRecorder()
+	gin.SetMode(gin.TestMode)
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request, _ = http.NewRequest(http.MethodPut, fmt.Sprintf(`/books/%s`, bookID.String()), bytes.NewBufferString(body))
+	c.Params = gin.Params{
+		{Key: "id", Value: bookID.String()},
+	}
+	c.Header("Content-Type", "application/json")
+
+	controller.UpdateBook(c)
+
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+	assert.JSONEq(t, `{"message": "unable to fetch entity"}`, w.Body.String())
+}
