@@ -164,3 +164,23 @@ func (controller *BookController) UpdateBook(ctx *gin.Context) {
 	ctx.JSON(http.StatusNoContent, nil)
 	return
 }
+
+func (controller *BookController) DeleteBook(ctx *gin.Context) {
+	id, err := uuid.Parse(ctx.Param("id"))
+
+	if err != nil || id == uuid.Nil {
+		ctx.JSON(response.InvalidID.StatusCode, response.InvalidID.Message)
+		return
+	}
+
+	if err := controller.bookRepository.Delete(id); err != nil {
+		if errors.Is(err, &custom.BookNotFound) {
+			ctx.JSON(response.NothingToDelete.StatusCode, nil)
+			return
+		}
+		ctx.JSON(response.UnableFetchEntity.StatusCode, response.UnableFetchEntity.Message)
+		return
+	}
+	ctx.JSON(http.StatusNoContent, nil)
+	return
+}
