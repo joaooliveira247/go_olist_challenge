@@ -1085,3 +1085,29 @@ func TestDeleteBookReturnError(t *testing.T) {
 		assert.Equal(t, testCase.message, w.Body.String())
 	}
 }
+
+func TestDeleteBookSuccess(t *testing.T) {
+	mockBookRepository := new(mocks.BookRepository)
+	mockBookAuthorRepository := new(mocks.BookAuthorRepository)
+
+	bookID := uuid.New()
+
+	mockBookRepository.On("Delete", bookID).Return(nil)
+
+	controller := controllers.NewBookController(mockBookRepository, mockBookAuthorRepository)
+
+	w := httptest.NewRecorder()
+	gin.SetMode(gin.TestMode)
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request, _ = http.NewRequest(http.MethodDelete, fmt.Sprintf(`/books/%s`, bookID.String()), nil)
+	c.Params = gin.Params{
+		{Key: "id", Value: bookID.String()},
+	}
+	c.Header("Content-Type", "application/json")
+
+	controller.DeleteBook(c)
+
+	assert.Equal(t, http.StatusNoContent, w.Code)
+	assert.Empty(t, w.Body.String())
+}
