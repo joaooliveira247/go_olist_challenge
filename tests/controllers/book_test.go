@@ -1031,7 +1031,7 @@ func TestDeleteBookReturnInvalidID(t *testing.T) {
 		}
 		c.Header("Content-Tyoe", "application/json")
 
-		controller.UpdateBook(c)
+		controller.DeleteBook(c)
 
 		assert.Equal(t, http.StatusBadRequest, w.Code)
 		assert.JSONEq(t, `{"message": "invalid id"}`, w.Body.String())
