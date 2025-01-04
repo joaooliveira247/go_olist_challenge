@@ -9,11 +9,12 @@ import (
 	"github.com/joaooliveira247/go_olist_challenge/src/errors"
 	"github.com/joaooliveira247/go_olist_challenge/src/models"
 	"github.com/joaooliveira247/go_olist_challenge/src/repositories"
+	"github.com/joaooliveira247/go_olist_challenge/tests/mocks"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestCreateBookAuthorSuccess(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -38,7 +39,7 @@ func TestCreateBookAuthorSuccess(t *testing.T) {
 }
 
 func TestCreateBookAuthorReturnGenericError(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -64,7 +65,7 @@ func TestCreateBookAuthorReturnGenericError(t *testing.T) {
 }
 
 func TestCreateBookAuthorReturnRelationshipAlreadyExists(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -88,7 +89,7 @@ func TestCreateBookAuthorReturnRelationshipAlreadyExists(t *testing.T) {
 }
 
 func TestDeleteBookAuthorSuccess(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -111,7 +112,7 @@ func TestDeleteBookAuthorSuccess(t *testing.T) {
 }
 
 func TestDeleteBookAuthorReturnGenericError(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()

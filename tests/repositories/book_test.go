@@ -16,7 +16,7 @@ import (
 )
 
 func TestCreateBookSuccess(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -49,7 +49,7 @@ func TestCreateBookSuccess(t *testing.T) {
 }
 
 func TestCreateBookReturnAlredyExists(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -75,7 +75,7 @@ func TestCreateBookReturnAlredyExists(t *testing.T) {
 }
 
 func TestCreateBookReturnGenericError(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -103,7 +103,7 @@ func TestCreateBookReturnGenericError(t *testing.T) {
 }
 
 func TestUpdateBookSuccess(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -133,7 +133,7 @@ func TestUpdateBookSuccess(t *testing.T) {
 }
 
 func TestUpdateBookReturnNothingToUpdate(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -164,7 +164,7 @@ func TestUpdateBookReturnNothingToUpdate(t *testing.T) {
 }
 
 func TestUpdateBookReturnGenericError(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -195,7 +195,7 @@ func TestUpdateBookReturnGenericError(t *testing.T) {
 }
 
 func TestGetAllBooksSuccess(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -220,7 +220,7 @@ func TestGetAllBooksSuccess(t *testing.T) {
 }
 
 func TestGetAllReturnGenericError(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -239,7 +239,7 @@ func TestGetAllReturnGenericError(t *testing.T) {
 }
 
 func TestGetBookByOneQuerySuccess(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -267,7 +267,7 @@ func TestGetBookByOneQuerySuccess(t *testing.T) {
 }
 
 func TestGetBookByQuerySuccess(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -291,7 +291,7 @@ func TestGetBookByQuerySuccess(t *testing.T) {
 }
 
 func TestGetBookByQueryReturnGenericError(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -315,7 +315,7 @@ func TestGetBookByQueryReturnGenericError(t *testing.T) {
 }
 
 func TestGetBookByIDSuccess(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -339,7 +339,7 @@ func TestGetBookByIDSuccess(t *testing.T) {
 }
 
 func TestGetBookByIDReturnBookNotFound(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -359,7 +359,7 @@ func TestGetBookByIDReturnBookNotFound(t *testing.T) {
 }
 
 func TestGetBookByIDReturnGenericError(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -382,7 +382,7 @@ func TestGetBookByIDReturnGenericError(t *testing.T) {
 }
 
 func TestGetBooksByAuthorIDSuccess(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -412,7 +412,7 @@ func TestGetBooksByAuthorIDSuccess(t *testing.T) {
 }
 
 func TestGetBooksByAuthorIDReturnGenericError(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -435,7 +435,7 @@ func TestGetBooksByAuthorIDReturnGenericError(t *testing.T) {
 }
 
 func TestDeleteBookSuccess(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -455,7 +455,7 @@ func TestDeleteBookSuccess(t *testing.T) {
 }
 
 func TestDeleteBookReturnNotFound(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -475,7 +475,7 @@ func TestDeleteBookReturnNotFound(t *testing.T) {
 }
 
 func TestDeleteBookReturnGenericError(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()

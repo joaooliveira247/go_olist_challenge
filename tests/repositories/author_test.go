@@ -9,12 +9,13 @@ import (
 	"github.com/joaooliveira247/go_olist_challenge/src/errors"
 	"github.com/joaooliveira247/go_olist_challenge/src/models"
 	"github.com/joaooliveira247/go_olist_challenge/src/repositories"
+	"github.com/joaooliveira247/go_olist_challenge/tests/mocks"
 	"github.com/stretchr/testify/assert"
 	"gorm.io/gorm"
 )
 
 func TestCreateSuccess(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 	defer func() {
 		db, _ := gormDB.DB()
 		db.Close()
@@ -42,7 +43,7 @@ func TestCreateSuccess(t *testing.T) {
 }
 
 func TestCreateAlreadyExistsError(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -63,7 +64,7 @@ func TestCreateAlreadyExistsError(t *testing.T) {
 }
 
 func TestCreateNotExpectedError(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -87,7 +88,7 @@ func TestCreateNotExpectedError(t *testing.T) {
 }
 
 func TestCreateManySuccess(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -123,7 +124,7 @@ func TestCreateManySuccess(t *testing.T) {
 }
 
 func TestCreateManyNotExpectedError(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -151,7 +152,7 @@ func TestCreateManyNotExpectedError(t *testing.T) {
 }
 
 func TestGetAllSuccess(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -180,7 +181,7 @@ func TestGetAllSuccess(t *testing.T) {
 }
 
 func TestGetAllNotExpectedError(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -199,7 +200,7 @@ func TestGetAllNotExpectedError(t *testing.T) {
 }
 
 func TestGetByIDSuccess(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -222,7 +223,7 @@ func TestGetByIDSuccess(t *testing.T) {
 }
 
 func TestGetByIDNotFoundError(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -243,7 +244,7 @@ func TestGetByIDNotFoundError(t *testing.T) {
 }
 
 func TestGetByIDNotExpectedError(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -264,7 +265,7 @@ func TestGetByIDNotExpectedError(t *testing.T) {
 }
 
 func TestGetByNameSuccess(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -284,7 +285,7 @@ func TestGetByNameSuccess(t *testing.T) {
 }
 
 func TestGetByNameEmptySlice(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -302,7 +303,7 @@ func TestGetByNameEmptySlice(t *testing.T) {
 }
 
 func TestGetByNameNotExpectedError(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -321,7 +322,7 @@ func TestGetByNameNotExpectedError(t *testing.T) {
 }
 
 func TestDeleteSuccess(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -342,7 +343,7 @@ func TestDeleteSuccess(t *testing.T) {
 }
 
 func TestDeleteNotExpectedError(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
@@ -364,7 +365,7 @@ func TestDeleteNotExpectedError(t *testing.T) {
 }
 
 func TestDeleteNotFoundError(t *testing.T) {
-	gormDB, mock := SetupMockDB()
+	gormDB, mock := mocks.SetupMockDB()
 
 	defer func() {
 		db, _ := gormDB.DB()
