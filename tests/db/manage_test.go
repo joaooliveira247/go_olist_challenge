@@ -48,3 +48,16 @@ func TestCreateAllTablesSuccess(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NoError(t, mock.ExpectationsWereMet())
 }
+
+func TestCreateAllTablesReturnErrorWhenCreateAuthorsTableAlreadyExists(t *testing.T) {
+	gormDB, mock := mocks.SetupMockDB()
+
+	// Mock SELECT for "authors" table existence check
+	mock.ExpectQuery(regexp.QuoteMeta(
+		`SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = $1 AND table_type = $2`,
+	)).WithArgs("authors", "BASE TABLE").WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(1))
+
+	err := db.CreateTables(gormDB)
+
+	assert.Error(t, err)
+}
