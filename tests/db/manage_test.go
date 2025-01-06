@@ -128,3 +128,34 @@ func TestCreateAllTablesReturnErrorGenericWhenCreateBooksTable(t *testing.T) {
 	assert.Error(t, err)
 	assert.ErrorIs(t, err, &errors.BookGenericError)
 }
+
+func TestCreateAllTablesReturnErrorWhenCreateBookAuthorsTableAlreadyExists(t *testing.T) {
+
+	gormDB, mock := mocks.SetupMockDB()
+
+	// Mock SELECT for "authors" table existence check
+	mock.ExpectQuery(regexp.QuoteMeta(
+		`SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = $1 AND table_type = $2`,
+	)).WithArgs("authors", "BASE TABLE").WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(0))
+
+	// Mock CREATE TABLE for "authors"
+	mock.ExpectExec(regexp.QuoteMeta(
+		`CREATE TABLE "authors" ("id" uuid DEFAULT gen_random_uuid(),"name" varchar(255) NOT NULL,PRIMARY KEY ("id"),CONSTRAINT "uni_authors_name" UNIQUE ("name"))`,
+	)).WillReturnResult(sqlmock.NewResult(1, 1))
+
+	mock.ExpectQuery(regexp.QuoteMeta(
+		`SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = $1 AND table_type = $2`,
+	)).WithArgs("books", "BASE TABLE").WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(0))
+
+	mock.ExpectExec(regexp.QuoteMeta(
+		`CREATE TABLE "books" ("id" uuid DEFAULT gen_random_uuid(),"title" varchar(255) NOT NULL,"edition" smallint,"publication_year" smallint,PRIMARY KEY ("id"))`,
+	)).WillReturnResult(sqlmock.NewResult(1, 1))
+
+	mock.ExpectQuery(regexp.QuoteMeta(
+		`SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = $1 AND table_type = $2`,
+	)).WithArgs("book_authors", "BASE TABLE").WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(1))
+
+	err := db.CreateTables(gormDB)
+
+	assert.Error(t, err)
+}
