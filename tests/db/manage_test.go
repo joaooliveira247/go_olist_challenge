@@ -6,6 +6,7 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/joaooliveira247/go_olist_challenge/src/db"
+	"github.com/joaooliveira247/go_olist_challenge/src/errors"
 	"github.com/joaooliveira247/go_olist_challenge/tests/mocks"
 	"github.com/stretchr/testify/assert"
 )
@@ -56,6 +57,24 @@ func TestCreateAllTablesReturnErrorWhenCreateAuthorsTableAlreadyExists(t *testin
 	mock.ExpectQuery(regexp.QuoteMeta(
 		`SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = $1 AND table_type = $2`,
 	)).WithArgs("authors", "BASE TABLE").WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(1))
+
+	err := db.CreateTables(gormDB)
+
+	assert.Error(t, err)
+}
+
+func TestCreateAllTablesReturnGenericErrorWhenCreateAuthors(t *testing.T) {
+	gormDB, mock := mocks.SetupMockDB()
+
+	// Mock SELECT for "authors" table existence check
+	mock.ExpectQuery(regexp.QuoteMeta(
+		`SELECT count(*) FROM information_schema.tables WHERE table_schema = CURRENT_SCHEMA() AND table_name = $1 AND table_type = $2`,
+	)).WithArgs("authors", "BASE TABLE").WillReturnRows(sqlmock.NewRows([]string{"count"}).AddRow(0))
+
+	// Mock CREATE TABLE for "authors"
+	mock.ExpectExec(regexp.QuoteMeta(
+		`CREATE TABLE "authors" ("id" uuid DEFAULT gen_random_uuid(),"name" varchar(255) NOT NULL,PRIMARY KEY ("id"),CONSTRAINT "uni_authors_name" UNIQUE ("name"))`,
+	)).WillReturnError(&errors.AuthorGenericError)
 
 	err := db.CreateTables(gormDB)
 
