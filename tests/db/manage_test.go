@@ -211,3 +211,19 @@ end $$;`).WillReturnResult(sqlmock.NewResult(1, 1))
 
 	assert.Nil(t, err)
 }
+
+func TestDeleteAllTablesReturnError(t *testing.T) {
+	gormDB, mock := mocks.SetupMockDB()
+
+	mock.ExpectExec(`do $$ declare
+    r record;
+begin
+    for r in (select tablename from pg_tables where schemaname = 'public') loop
+        execute 'drop table if exists ' || quote_ident(r.tablename) || ' cascade';
+    end loop;
+end $$;`).WillReturnError(&errors.BookGenericError)
+
+	err := db.DeleteAllTables(gormDB)
+
+	assert.Error(t, err,)
+}
