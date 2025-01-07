@@ -195,3 +195,19 @@ func TestCreateAllTablesReturnErrorGenericWhenCreateBookAuthorsTable(t *testing.
 	assert.Error(t, err)
 	assert.ErrorIs(t, err, &errors.BookAuthorGenericError)
 }
+
+func TestDeleteAllTablesSuccess(t *testing.T) {
+	gormDB, mock := mocks.SetupMockDB()
+
+	mock.ExpectExec(`do $$ declare
+    r record;
+begin
+    for r in (select tablename from pg_tables where schemaname = 'public') loop
+        execute 'drop table if exists ' || quote_ident(r.tablename) || ' cascade';
+    end loop;
+end $$;`).WillReturnResult(sqlmock.NewResult(1, 1))
+
+	err := db.DeleteAllTables(gormDB)
+
+	assert.Nil(t, err)
+}
