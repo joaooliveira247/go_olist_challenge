@@ -1,0 +1,31 @@
+package routes
+
+import (
+	"log"
+
+	"github.com/gin-gonic/gin"
+	"github.com/joaooliveira247/go_olist_challenge/src/controllers"
+	"github.com/joaooliveira247/go_olist_challenge/src/db"
+	"github.com/joaooliveira247/go_olist_challenge/src/repositories"
+)
+
+func AuthorRoutes(eng *gin.Engine) {
+	db, err := db.GetDBConnection()
+
+	if err != nil {
+		log.Fatal("DATABASE: ", err)
+	}
+
+	authorRepository := repositories.NewAuthorRepository(db)
+
+	controller := controllers.NewAuthorController(authorRepository)
+
+	authorRouter := eng.Group("/authors")
+	{
+		authorRouter.POST("/", controller.CreateAuthor)
+		authorRouter.GET("/", controller.GetAllAuthors)
+		authorRouter.GET("/:id", controller.GetAuthorByID)
+		authorRouter.GET("/:name", controller.GetAuthorByName)
+		authorRouter.DELETE("/:id", controller.DeleteAuthor)
+	}
+}
