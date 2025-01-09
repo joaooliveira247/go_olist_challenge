@@ -10,13 +10,13 @@ import (
 )
 
 func AuthorRoutes(eng *gin.Engine) {
-	db, err := db.GetDBConnection()
+	gormDB, err := db.GetDBConnection()
 
 	if err != nil {
 		log.Fatal("DATABASE: ", err)
 	}
 
-	authorRepository := repositories.NewAuthorRepository(db)
+	authorRepository := repositories.NewAuthorRepository(gormDB)
 
 	controller := controllers.NewAuthorController(authorRepository)
 
