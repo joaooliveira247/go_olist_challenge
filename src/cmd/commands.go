@@ -20,3 +20,17 @@ func createTables(_ context.Context, cmd *cli.Command) error {
 
 	return nil
 }
+
+func deleteTables(_ context.Context, cmd *cli.Command) error {
+	gormDB, err := db.GetDBConnection()
+
+	if err != nil {
+		return err
+	}
+
+	if err := db.DeleteAllTables(gormDB); err != nil {
+		return err
+	}
+
+	return nil
+}
