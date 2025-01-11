@@ -68,6 +68,20 @@ func Gen() *[]cli.Command {
 			},
 			Action: runAPI,
 		},
+		{
+			Name: "database",
+			Aliases: []string{"db"},
+			Usage: "Interact with database",
+			Flags: nil,
+			Commands: []*cli.Command{
+				{
+					Name: "create",
+					Aliases: []string{"c"},
+					Usage: "Create all tables",
+					Action: createTables,
+				},
+			},
+		},
 	}
 	return cmd
 }
