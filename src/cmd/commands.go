@@ -52,3 +52,21 @@ func runAPI(_ context.Context, cmd *cli.Command) error {
 	}
 	return nil
 }
+
+func Gen() *[]cli.Command {
+	cmd := &[]cli.Command{
+		{
+			Name:  "run",
+			Usage: "Start API",
+			Flags: []cli.Flag{
+				&cli.UintFlag{
+					Name:  "port",
+					Value: uint64(8000),
+					Usage: "Port that API will run",
+				},
+			},
+			Action: runAPI,
+		},
+	}
+	return cmd
+}
