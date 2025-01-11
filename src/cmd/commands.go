@@ -53,38 +53,40 @@ func runAPI(_ context.Context, cmd *cli.Command) error {
 	return nil
 }
 
-func Gen() *[]cli.Command {
-	cmd := &[]cli.Command{
-		{
-			Name:  "run",
-			Usage: "Start API",
-			Flags: []cli.Flag{
-				&cli.UintFlag{
-					Name:    "port",
-					Value:   uint64(8000),
-					Aliases: []string{"p"},
-					Usage:   "Port that API will run",
+func Gen() *cli.Command {
+	cmd := &cli.Command{
+		Commands: []*cli.Command{
+			{
+				Name:  "run",
+				Usage: "Start API",
+				Flags: []cli.Flag{
+					&cli.UintFlag{
+						Name:    "port",
+						Value:   uint64(8000),
+						Aliases: []string{"p"},
+						Usage:   "Port that API will run",
+					},
 				},
+				Action: runAPI,
 			},
-			Action: runAPI,
-		},
-		{
-			Name:    "database",
-			Aliases: []string{"db"},
-			Usage:   "Interact with database",
-			Flags:   nil,
-			Commands: []*cli.Command{
-				{
-					Name:    "create",
-					Aliases: []string{"c"},
-					Usage:   "Create all tables",
-					Action:  createTables,
-				},
-				{
-					Name:    "delete",
-					Aliases: []string{"d"},
-					Usage:   "Delete all tables",
-					Action:  deleteTables,
+			{
+				Name:    "database",
+				Aliases: []string{"db"},
+				Usage:   "Interact with database",
+				Flags:   nil,
+				Commands: []*cli.Command{
+					{
+						Name:    "create",
+						Aliases: []string{"c"},
+						Usage:   "Create all tables",
+						Action:  createTables,
+					},
+					{
+						Name:    "delete",
+						Aliases: []string{"d"},
+						Usage:   "Delete all tables",
+						Action:  deleteTables,
+					},
 				},
 			},
 		},
