@@ -62,6 +62,7 @@ func Gen() *[]cli.Command {
 				&cli.UintFlag{
 					Name:  "port",
 					Value: uint64(8000),
+					Aliases: []string{"p"},
 					Usage: "Port that API will run",
 				},
 			},
