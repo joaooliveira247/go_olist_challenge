@@ -7,7 +7,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joaooliveira247/go_olist_challenge/src/config"
 	"github.com/joaooliveira247/go_olist_challenge/src/db"
+	"github.com/joaooliveira247/go_olist_challenge/src/repositories"
 	"github.com/joaooliveira247/go_olist_challenge/src/routes"
+	"github.com/joaooliveira247/go_olist_challenge/src/utils"
 	"github.com/urfave/cli/v3"
 )
 
@@ -50,6 +52,35 @@ func runAPI(_ context.Context, cmd *cli.Command) error {
 	if err := api.Run(fmt.Sprintf(":%d", port)); err != nil {
 		return err
 	}
+	return nil
+}
+
+func importAuthorsFromCSV(_ context.Context, cmd *cli.Command) error {
+	header := cmd.Bool("header")
+	path := cmd.Args().Get(0)
+
+	authors, err := utils.ParseAuthorsFromCSV(path, header)
+
+	if err != nil {
+		return err
+	}
+
+	gormDB, err := db.GetDBConnection()
+
+	if err != nil {
+		return err
+	}
+
+	repository := repositories.NewAuthorRepository(gormDB)
+
+	IDs, err := repository.CreateMany(&authors)
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(fmt.Sprintf("Inserted with IDs: %s", IDs))
+
 	return nil
 }
 
