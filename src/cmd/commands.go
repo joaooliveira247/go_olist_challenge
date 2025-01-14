@@ -125,10 +125,9 @@ func Gen() *cli.Command {
 				Usage: "Import authors by csv",
 				Flags: []cli.Flag{
 					&cli.BoolFlag{
-						Name:    "header",
-						Value:   true,
-						Aliases: []string{"h"},
-						Usage:   "Define csv has header",
+						Name:  "header",
+						Value: true,
+						Usage: "Define csv has header",
 					},
 				},
 				Action: importAuthorsFromCSV,
