@@ -22,7 +22,7 @@ func ParseAuthorsFromCSV(path string, header bool) ([]models.Author, error) {
 		return nil, err
 	}
 
-	if !header {
+	if header {
 		lines = lines[1:]
 	}
 
