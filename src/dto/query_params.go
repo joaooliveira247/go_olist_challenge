@@ -37,7 +37,3 @@ func (query *BookQueryParam) AsQuery() string {
 func (query *BookQueryParam) IsEmpty() bool {
 	return query.Title == "" && query.Edition == 0 && query.PublicationYear == 0
 }
-
-func (query *AuthorQueryParam) IsEmpty() bool {
-	return query.ID == uuid.Nil && query.Name == ""
-}
