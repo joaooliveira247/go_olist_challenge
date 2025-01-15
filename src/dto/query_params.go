@@ -3,10 +3,13 @@ package dto
 import (
 	"fmt"
 	"strings"
+
+	"github.com/google/uuid"
 )
 
 type AuthorQueryParam struct {
-	Name string `form:"name" binding:"min=2"`
+	ID   string `form:"authorID,omitempty"`
+	Name string `form:"name"`
 }
 
 type BookQueryParam struct {
@@ -33,4 +36,8 @@ func (query *BookQueryParam) AsQuery() string {
 
 func (query *BookQueryParam) IsEmpty() bool {
 	return query.Title == "" && query.Edition == 0 && query.PublicationYear == 0
+}
+
+func (query *AuthorQueryParam) IsEmpty() bool {
+	return query.ID == uuid.Nil && query.Name == ""
 }
