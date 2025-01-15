@@ -3,8 +3,6 @@ package dto
 import (
 	"fmt"
 	"strings"
-
-	"github.com/google/uuid"
 )
 
 type AuthorQueryParam struct {
