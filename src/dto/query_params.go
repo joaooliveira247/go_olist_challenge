@@ -6,7 +6,7 @@ import (
 )
 
 type AuthorQueryParam struct {
-	ID   string `form:"authorID,omitempty"`
+	ID   string `form:"authorID"`
 	Name string `form:"name"`
 }
 
