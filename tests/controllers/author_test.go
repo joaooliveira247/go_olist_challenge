@@ -334,6 +334,50 @@ func TestGetAuthorByNameReturnUnableFetchEntity(t *testing.T) {
 	assert.JSONEq(t, `{"message": "unable to fetch entity"}`, w.Body.String())
 }
 
+func TestGetAuthorsByQueryReturnErrorInAuthorID(t *testing.T) {
+	mockAuthorRepository := new(mocks.AuthorRepository)
+
+	testCases := []struct {
+		name string
+		url  string
+	}{
+		{
+			"Invalid numeric id",
+			"/authors/?authorID=123",
+		},
+		{
+			"Invalid special character id",
+			"/authors/?authorID=@_ç",
+		},
+		{
+			"Invalid letter id",
+			"/authors/?authorID=authorabc",
+		},
+		{
+			"Empty uuid",
+			fmt.Sprintf("/authors/?authorID=%s", uuid.Nil.String()),
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+
+			w := httptest.NewRecorder()
+			gin.SetMode(gin.TestMode)
+
+			c, _ := gin.CreateTestContext(w)
+			c.Request, _ = http.NewRequest(http.MethodGet, testCase.url, nil)
+			c.Header("Content-Type", "application/json")
+
+			controller := controllers.NewAuthorController(mockAuthorRepository)
+			controller.GetAuthors(c)
+
+			assert.Equal(t, http.StatusBadRequest, w.Code)
+			assert.JSONEq(t, `{"message": "invalid id"}`, w.Body.String())
+		})
+	}
+}
+
 func TestDeleteAuthorSuccess(t *testing.T) {
 	mockRepository := new(mocks.AuthorRepository)
 
