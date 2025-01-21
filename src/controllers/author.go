@@ -92,25 +92,6 @@ func (ctrl *AuthorController) GetAuthors(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, authors)
 }
 
-func (ctrl *AuthorController) GetAuthorByName(ctx *gin.Context) {
-	var queryParam dto.AuthorQueryParam
-
-	if ctx.ShouldBindQuery(&queryParam) != nil {
-		ctx.JSON(response.InvalidParam.StatusCode, response.InvalidParam.Message)
-		return
-	}
-
-	authors, err := ctrl.repository.GetByName(queryParam.Name)
-
-	if err != nil {
-		ctx.JSON(response.UnableFetchEntity.StatusCode, response.UnableFetchEntity.Message)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, authors)
-	return
-}
-
 func (ctrl *AuthorController) DeleteAuthor(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Param("id"))
 
