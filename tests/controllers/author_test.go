@@ -378,6 +378,26 @@ func TestGetAuthorsByQueryReturnErrorInAuthorID(t *testing.T) {
 	}
 }
 
+func TestGetAuthorsByIDReturnNotFound(t *testing.T) {
+	authorID := uuid.New()
+
+	mockAuthorRepository := new(mocks.AuthorRepository)
+	mockAuthorRepository.On("GetByID", authorID).Return(models.Author{}, &errors.AuthorGenericError)
+
+	w := httptest.NewRecorder()
+	gin.SetMode(gin.TestMode)
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request, _ = http.NewRequest(http.MethodGet, fmt.Sprintf("/authors/?authorID=%s", authorID), nil)
+	c.Header("Content-Type", "application/json")
+
+	controller := controllers.NewAuthorController(mockAuthorRepository)
+	controller.GetAuthors(c)
+
+	assert.Equal(t, http.StatusNotFound, w.Code)
+	assert.JSONEq(t, `{"message": "author not found"}`, w.Body.String())
+}
+
 func TestDeleteAuthorSuccess(t *testing.T) {
 	mockRepository := new(mocks.AuthorRepository)
 
