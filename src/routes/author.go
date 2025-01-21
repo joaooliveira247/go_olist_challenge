@@ -23,9 +23,7 @@ func AuthorRoutes(eng *gin.Engine) {
 	authorRouter := eng.Group("/authors")
 	{
 		authorRouter.POST("/", controller.CreateAuthor)
-		authorRouter.GET("/", controller.GetAllAuthors)
-		authorRouter.GET("/:id", controller.GetAuthorByID)
-		authorRouter.GET("/:name", controller.GetAuthorByName)
+		authorRouter.GET("/", controller.GetAuthors)
 		authorRouter.DELETE("/:id", controller.DeleteAuthor)
 	}
 }
