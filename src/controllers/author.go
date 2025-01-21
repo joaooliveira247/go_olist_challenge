@@ -44,6 +44,54 @@ func (ctrl *AuthorController) CreateAuthor(ctx *gin.Context) {
 	return
 }
 
+func (ctrl *AuthorController) GetAuthors(ctx *gin.Context) {
+	// so codar os tests
+	var params dto.AuthorQueryParam
+
+	if err := ctx.ShouldBindQuery(&params); err != nil {
+		ctx.JSON(response.InvalidParam.StatusCode, response.InvalidParam.Message)
+		return
+	}
+
+	if params.ID != "" {
+		id, err := uuid.Parse(params.ID)
+
+		if err != nil || id == uuid.Nil {
+			ctx.JSON(response.InvalidID.StatusCode, response.InvalidID.Message)
+			return
+		}
+
+		author, err := ctrl.repository.GetByID(id)
+
+		if err != nil {
+			ctx.JSON(response.AuthorNotFound.StatusCode, response.AuthorNotFound.Message)
+			return
+		}
+		ctx.JSON(http.StatusOK, author)
+		return
+	}
+
+	if params.Name != "" {
+		authors, err := ctrl.repository.GetByName(params.Name)
+
+		if err != nil {
+			ctx.JSON(response.AuthorNotFound.StatusCode, response.AuthorNotFound.Message)
+			return
+		}
+
+		ctx.JSON(http.StatusOK, authors)
+		return
+	}
+
+	authors, err := ctrl.repository.GetAll()
+
+	if err != nil {
+		ctx.JSON(response.UnableFetchEntity.StatusCode, response.UnableFetchEntity.Message)
+		return
+	}
+	ctx.JSON(http.StatusOK, authors)
+}
+
 func (ctrl *AuthorController) GetAllAuthors(ctx *gin.Context) {
 	authors, err := ctrl.repository.GetAll()
 
