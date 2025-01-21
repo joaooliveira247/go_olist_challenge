@@ -495,6 +495,42 @@ func TestGetAuthorsReturnUnableFetchEntity(t *testing.T) {
 	assert.JSONEq(t, `{"message": "unable to fetch entity"}`, w.Body.String())
 }
 
+func TestGetAuthorsSuccess(t *testing.T) {
+	mockAuthors := []models.Author{
+		{
+			ID:   uuid.New(),
+			Name: "Edgar Allan Poe",
+		},
+		{
+			ID:   uuid.New(),
+			Name: "Stephen King",
+		},
+		{
+			ID:   uuid.New(),
+			Name: "Stephen Hawking",
+		},
+	}
+
+	mockAuthorRepository := new(mocks.AuthorRepository)
+	mockAuthorRepository.On("GetAll").Return(mockAuthors, nil)
+
+	w := httptest.NewRecorder()
+	gin.SetMode(gin.TestMode)
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request, _ = http.NewRequest(http.MethodGet, "/authors/", nil)
+	c.Header("Content-Type", "application/json")
+
+	controller := controllers.NewAuthorController(mockAuthorRepository)
+	controller.GetAuthors(c)
+
+	bMock, _ := json.Marshal(mockAuthors)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.JSONEq(t, string(bMock), w.Body.String())
+
+}
+
 func TestDeleteAuthorSuccess(t *testing.T) {
 	mockRepository := new(mocks.AuthorRepository)
 
