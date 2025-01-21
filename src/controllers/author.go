@@ -92,18 +92,6 @@ func (ctrl *AuthorController) GetAuthors(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, authors)
 }
 
-func (ctrl *AuthorController) GetAllAuthors(ctx *gin.Context) {
-	authors, err := ctrl.repository.GetAll()
-
-	if err != nil {
-		ctx.JSON(response.UnableFetchEntity.StatusCode, response.UnableFetchEntity.Message)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, authors)
-	return
-}
-
 func (ctrl *AuthorController) GetAuthorByID(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Param("id"))
 
