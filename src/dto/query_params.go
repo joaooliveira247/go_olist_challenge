@@ -11,6 +11,8 @@ type AuthorQueryParam struct {
 }
 
 type BookQueryParam struct {
+	AuthorID        string `form:"authorID,omitempty"`
+	BookID          string `form:"bookID,omitempty"`
 	Title           string `form:"title,omitempty"`
 	Edition         uint8  `form:"edition,omitempty"`
 	PublicationYear uint   `form:"publicationYear,omitempty"`
