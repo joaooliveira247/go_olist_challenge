@@ -417,6 +417,33 @@ func TestGetAuthorsByNameReturnNotFound(t *testing.T) {
 	assert.JSONEq(t, `{"message": "author not found"}`, w.Body.String())
 }
 
+func TestGetAuthorsByIDSuccess(t *testing.T) {
+	authorID := uuid.New()
+
+	mockAuthor := models.Author{
+		ID:   authorID,
+		Name: "Edgar Allan Poe",
+	}
+
+	mockAuthorRepository := new(mocks.AuthorRepository)
+	mockAuthorRepository.On("GetByID", authorID).Return(mockAuthor, nil)
+
+	w := httptest.NewRecorder()
+	gin.SetMode(gin.TestMode)
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request, _ = http.NewRequest(http.MethodGet, fmt.Sprintf("/authors/?authorID=%s", authorID), nil)
+	c.Header("Content-Type", "application/json")
+
+	controller := controllers.NewAuthorController(mockAuthorRepository)
+	controller.GetAuthors(c)
+
+	bMock, _ := json.Marshal(mockAuthor)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.JSONEq(t, string(bMock), w.Body.String())
+}
+
 func TestDeleteAuthorSuccess(t *testing.T) {
 	mockRepository := new(mocks.AuthorRepository)
 
