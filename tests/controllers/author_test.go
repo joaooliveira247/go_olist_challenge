@@ -477,6 +477,24 @@ func TestGetAuthorsByNameSuccess(t *testing.T) {
 	assert.JSONEq(t, string(bMock), w.Body.String())
 }
 
+func TestGetAuthorsReturnUnableFetchEntity(t *testing.T) {
+	mockAuthorRepository := new(mocks.AuthorRepository)
+	mockAuthorRepository.On("GetAll").Return(nil, &errors.AuthorGenericError)
+
+	w := httptest.NewRecorder()
+	gin.SetMode(gin.TestMode)
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request, _ = http.NewRequest(http.MethodGet, "/authors/", nil)
+	c.Header("Content-Type", "application/json")
+
+	controller := controllers.NewAuthorController(mockAuthorRepository)
+	controller.GetAuthors(c)
+
+	assert.Equal(t, http.StatusInternalServerError, w.Code)
+	assert.JSONEq(t, `{"message": "unable to fetch entity"}`, w.Body.String())
+}
+
 func TestDeleteAuthorSuccess(t *testing.T) {
 	mockRepository := new(mocks.AuthorRepository)
 
