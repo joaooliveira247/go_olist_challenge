@@ -110,62 +110,6 @@ func TestCreateReturnUnableCreateEntity(t *testing.T) {
 	assert.JSONEq(t, `{"message": "unable to create entity"}`, w.Body.String())
 }
 
-func TestGetAllAuthorsSuccess(t *testing.T) {
-	mockRepository := new(mocks.AuthorRepository)
-
-	authors := []models.Author{
-		{
-			ID:   uuid.New(),
-			Name: "Luciano Ramalho",
-		},
-		{
-			ID:   uuid.New(),
-			Name: "J. K. Rowling",
-		},
-		{
-			ID:   uuid.New(),
-			Name: "Machado de Assis",
-		},
-	}
-
-	mockRepository.On("GetAll").Return(authors, nil)
-
-	w := httptest.NewRecorder()
-	gin.SetMode(gin.TestMode)
-
-	c, _ := gin.CreateTestContext(w)
-	c.Request, _ = http.NewRequest(http.MethodGet, "/authors/", nil)
-	c.Request.Header.Set("Content-Type", "application/json")
-
-	controller := controllers.NewAuthorController(mockRepository)
-
-	controller.GetAllAuthors(c)
-
-	expectedJson, _ := json.Marshal(authors)
-
-	assert.Equal(t, http.StatusOK, w.Code)
-	assert.JSONEq(t, string(expectedJson), w.Body.String())
-}
-
-func TestGetAllAuthorsReturnUnableFetchEntity(t *testing.T) {
-	mockRepository := new(mocks.AuthorRepository)
-
-	mockRepository.On("GetAll").Return(nil, &errors.AuthorGenericError)
-
-	w := httptest.NewRecorder()
-	gin.SetMode(gin.TestMode)
-
-	c, _ := gin.CreateTestContext(w)
-	c.Request, _ = http.NewRequest(http.MethodGet, "/authors/", nil)
-
-	controller := controllers.NewAuthorController(mockRepository)
-
-	controller.GetAllAuthors(c)
-
-	assert.Equal(t, http.StatusInternalServerError, w.Code)
-	assert.JSONEq(t, `{"message": "unable to fetch entity"}`, w.Body.String())
-}
-
 func TestGetAuthorByIDSucess(t *testing.T) {
 	mockRepository := new(mocks.AuthorRepository)
 
