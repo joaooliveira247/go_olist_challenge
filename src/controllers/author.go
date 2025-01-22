@@ -46,7 +46,7 @@ func (ctrl *AuthorController) CreateAuthor(ctx *gin.Context) {
 
 func (ctrl *AuthorController) GetAuthors(ctx *gin.Context) {
 	// so codar os tests
-	var params dto.AuthorQueryParam
+	var params dto.AuthorQueryParams
 
 	if err := ctx.ShouldBindQuery(&params); err != nil {
 		ctx.JSON(response.InvalidParam.StatusCode, response.InvalidParam.Message)

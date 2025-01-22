@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-type AuthorQueryParam struct {
+type AuthorQueryParams struct {
 	ID   string `form:"authorID"`
 	Name string `form:"name"`
 }
