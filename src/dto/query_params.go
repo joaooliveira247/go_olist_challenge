@@ -10,7 +10,7 @@ type AuthorQueryParams struct {
 	Name string `form:"name"`
 }
 
-type BookQueryParam struct {
+type BookQueryParams struct {
 	AuthorID        string `form:"authorID,omitempty"`
 	BookID          string `form:"bookID,omitempty"`
 	Title           string `form:"title,omitempty"`
@@ -18,7 +18,7 @@ type BookQueryParam struct {
 	PublicationYear uint   `form:"publicationYear,omitempty"`
 }
 
-func (query *BookQueryParam) AsQuery() string {
+func (query *BookQueryParams) AsQuery() string {
 	whereClauses := []string{}
 
 	if query.Title != "" {
@@ -34,6 +34,6 @@ func (query *BookQueryParam) AsQuery() string {
 	return strings.Join(whereClauses, " AND ")
 }
 
-func (query *BookQueryParam) IsEmpty() bool {
+func (query *BookQueryParams) IsEmpty() bool {
 	return query.Title == "" && query.Edition == 0 && query.PublicationYear == 0
 }
