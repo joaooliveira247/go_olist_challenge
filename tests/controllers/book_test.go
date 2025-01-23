@@ -306,6 +306,64 @@ func TestGetBooksReturnInvalidID(t *testing.T) {
 	}
 }
 
+func TestGetBooksReturnUnableFetchEntity(t *testing.T) {
+	mockBookRepository := new(mocks.BookRepository)
+	mockBookAuthorRepository := new(mocks.BookAuthorRepository)
+
+	testCases := []struct {
+		name             string
+		url              string
+		methodRepository string
+		returnObj        interface{}
+	}{
+		{
+			"bookID",
+			fmt.Sprintf("/books/?bookID=%s", uuid.New().String()),
+			"GetBookByID",
+			models.BookOut{},
+		},
+		{
+			"AuthorID",
+			fmt.Sprintf("/books/?authorID=%s", uuid.New().String()),
+			"GetBooksByAuthorID",
+			nil,
+		},
+		{
+			"Query",
+			"/books/?title=The Go Programming Language&edition=2&publicationYear=2015",
+			"GetBookByQuery",
+			nil,
+		},
+		{
+			"All",
+			"/books/",
+			"GetAll",
+			nil,
+		},
+	}
+
+	// use mockanything as param
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			mockBookRepository.Calls = nil
+			mockBookRepository.On(testCase.methodRepository, mock.Anything).Return(testCase.returnObj, &errors.BookGenericError)
+			controller := controllers.NewBookController(mockBookRepository, mockBookAuthorRepository)
+
+			w := httptest.NewRecorder()
+			gin.SetMode(gin.TestMode)
+
+			c, _ := gin.CreateTestContext(w)
+			c.Request, _ = http.NewRequest(http.MethodGet, testCase.url, nil)
+			c.Request.Header.Set("Content-Type", "application/json")
+
+			controller.GetBooks(c)
+
+			assert.Equal(t, http.StatusInternalServerError, w.Code)
+			assert.JSONEq(t, `{"message": "unable to fetch entity"}`, w.Body.String())
+		})
+	}
+}
+
 func TestBookGetByQueryReturnAllSucess(t *testing.T) {
 	mockBookRepository := new(mocks.BookRepository)
 	mockBookAuthorRepository := new(mocks.BookAuthorRepository)
