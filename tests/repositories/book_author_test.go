@@ -27,7 +27,7 @@ func TestCreateBookAuthorSuccess(t *testing.T) {
 	mock.ExpectBegin()
 	mock.ExpectExec(
 		regexp.QuoteMeta(
-			`INSERT INTO "book_authors" ("book_id","author_id") VALUES ($1,$2)`,
+			`INSERT INTO "book_author" ("book_id","author_id") VALUES ($1,$2)`,
 		),
 	).WithArgs(bookID, authorID).WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectCommit()
@@ -52,7 +52,7 @@ func TestCreateBookAuthorReturnGenericError(t *testing.T) {
 	mock.ExpectBegin()
 	mock.ExpectExec(
 		regexp.QuoteMeta(
-			`INSERT INTO "book_authors" ("book_id","author_id") VALUES ($1,$2)`,
+			`INSERT INTO "book_author" ("book_id","author_id") VALUES ($1,$2)`,
 		),
 	).WithArgs(bookID, authorID).WillReturnError(&errors.BookAuthorGenericError)
 	mock.ExpectRollback()
@@ -77,7 +77,7 @@ func TestCreateBookAuthorReturnRelationshipAlreadyExists(t *testing.T) {
 
 	mock.ExpectBegin()
 	mock.ExpectExec(
-		regexp.QuoteMeta(`INSERT INTO "book_authors" ("book_id","author_id") VALUES ($1,$2)`),
+		regexp.QuoteMeta(`INSERT INTO "book_author" ("book_id","author_id") VALUES ($1,$2)`),
 	).WithArgs(bookID, authorID).WillReturnError(&errors.RelationshipAlreadyExists)
 	mock.ExpectRollback()
 
@@ -101,7 +101,7 @@ func TestDeleteBookAuthorSuccess(t *testing.T) {
 	mock.ExpectBegin()
 	mock.ExpectExec(
 		regexp.QuoteMeta(
-			`DELETE FROM "book_authors" WHERE book_id = $1`,
+			`DELETE FROM "book_author" WHERE book_id = $1`,
 		),
 	).WithArgs(bookID).WillReturnResult(sqlmock.NewResult(1, 1))
 	mock.ExpectCommit()
@@ -123,7 +123,7 @@ func TestDeleteBookAuthorReturnGenericError(t *testing.T) {
 
 	mock.ExpectBegin()
 	mock.ExpectExec(
-		regexp.QuoteMeta(`DELETE FROM "book_authors" WHERE book_id = $1`),
+		regexp.QuoteMeta(`DELETE FROM "book_author" WHERE book_id = $1`),
 	).WithArgs(bookID).WillReturnError(&errors.BookAuthorGenericError)
 	mock.ExpectRollback()
 
