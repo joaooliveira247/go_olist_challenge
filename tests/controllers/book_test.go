@@ -210,6 +210,57 @@ func TestBookCreateReturnUnableCreateEntityWhenCreateRelationship(t *testing.T) 
 	assert.JSONEq(t, `{"message": "unable to create entity"}`, w.Body.String())
 }
 
+func TestGetBooksReturnInvalidParam(t *testing.T) {
+	mockBookRepository := new(mocks.BookRepository)
+	mockBookAuthorRepository := new(mocks.BookAuthorRepository)
+
+	testCases := []struct {
+		name string
+		url  string
+	}{
+		{
+			"Edition greather than uint8",
+			"/books/?edition=512",
+		},
+		{
+			"Edition Lower than one",
+			"/books/?edition=-10",
+		},
+		{
+			"Edition with letter",
+			"/books/?edition=a",
+		},
+		{
+			"Edition with special character",
+			"/books/?edition=@",
+		},
+		{
+			"PublicationYear Lower than one",
+			"/books/?publicationYear=-1",
+		},
+		{
+			"PublicationYear with special character",
+			"/books/?publicationYear=@",
+		},
+	}
+
+	for _, testCase := range testCases {
+		controller := controllers.NewBookController(mockBookRepository, mockBookAuthorRepository)
+
+		w := httptest.NewRecorder()
+		gin.SetMode(gin.TestMode)
+
+		c, _ := gin.CreateTestContext(w)
+		c.Request, _ = http.NewRequest(http.MethodGet, testCase.url, nil)
+		c.Request.Header.Set("Content-Type", "application/json")
+
+		controller.GetBooks(c)
+
+		assert.Equal(t, http.StatusBadRequest, w.Code)
+		assert.JSONEq(t, `{"message": "invalid query param"}`, w.Body.String())
+	}
+}
+
 func TestBookGetByQueryReturnAllSucess(t *testing.T) {
 	mockBookRepository := new(mocks.BookRepository)
 	mockBookAuthorRepository := new(mocks.BookAuthorRepository)
