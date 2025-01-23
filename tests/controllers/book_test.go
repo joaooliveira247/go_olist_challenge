@@ -261,6 +261,51 @@ func TestGetBooksReturnInvalidParam(t *testing.T) {
 	}
 }
 
+func TestGetBooksReturnInvalidID(t *testing.T) {
+	mockBookRepository := new(mocks.BookRepository)
+	mockBookAuthorRepository := new(mocks.BookAuthorRepository)
+
+	params := []string{"bookID", "authorID"}
+
+	testCases := []struct {
+		name string
+		url  string
+	}{
+		{
+			"invalid",
+			"/books/?%s=123",
+		},
+		{
+			"empty",
+			"/books/?%s=00000000-0000-0000-0000-000000000000",
+		},
+		{
+			"bookID length OK but uuid invalid",
+			"/books/?%s=@@@@@@@@-@@@@-@@@@-@@@@-@@@@@@@@@@@@",
+		},
+	}
+
+	for _, param := range params {
+		for _, testCase := range testCases {
+			t.Run(fmt.Sprintf("%s %s", param, testCase.name), func(t *testing.T) {
+				controller := controllers.NewBookController(mockBookRepository, mockBookAuthorRepository)
+
+				w := httptest.NewRecorder()
+				gin.SetMode(gin.TestMode)
+
+				c, _ := gin.CreateTestContext(w)
+				c.Request, _ = http.NewRequest(http.MethodGet, fmt.Sprintf(testCase.url, param), nil)
+				c.Request.Header.Set("Content-Type", "application/json")
+
+				controller.GetBooks(c)
+
+				assert.Equal(t, http.StatusBadRequest, w.Code)
+				assert.JSONEq(t, `{"message": "invalid id"}`, w.Body.String())
+			})
+		}
+	}
+}
+
 func TestBookGetByQueryReturnAllSucess(t *testing.T) {
 	mockBookRepository := new(mocks.BookRepository)
 	mockBookAuthorRepository := new(mocks.BookAuthorRepository)
