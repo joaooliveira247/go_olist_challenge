@@ -8,3 +8,7 @@ type BookAuthor struct {
 	AuthorID uuid.UUID `gorm:"primaryKey;column:author_id"`
 	Author   Author    `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;foreignKey:AuthorID;"`
 }
+
+func (BookAuthor) TableName() string {
+	return "book_author"
+}
