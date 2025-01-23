@@ -256,7 +256,7 @@ func TestGetBookByOneQuerySuccess(t *testing.T) {
 
 	mock.ExpectQuery(regexp.QuoteMeta(`SELECT b.id, b.title, b.edition, b.publication_year, array_agg(a.name) AS authors FROM book_author ba INNER JOIN books b ON ba.book_id = b.id INNER JOIN authors a ON ba.author_id = a.id WHERE b.title = Python Fluente GROUP BY b.id;`)).WillReturnRows(rows)
 
-	query := dto.BookQueryParam{Title: "Python Fluente"}
+	query := dto.BookQueryParams{Title: "Python Fluente"}
 
 	repository := repositories.NewBookRepository(gormDB)
 	books, err := repository.GetBookByQuery(query.AsQuery())
@@ -280,7 +280,7 @@ func TestGetBookByQuerySuccess(t *testing.T) {
 
 	mock.ExpectQuery(regexp.QuoteMeta(`SELECT b.id, b.title, b.edition, b.publication_year, array_agg(a.name) AS authors FROM book_author ba INNER JOIN books b ON ba.book_id = b.id INNER JOIN authors a ON ba.author_id = a.id WHERE b.title = the Rust Programming Language AND b.edition = 1 AND b.publication_year = 2018 GROUP BY b.id;`)).WillReturnRows(rows)
 
-	query := dto.BookQueryParam{Title: MBook.Title, Edition: MBook.Edition, PublicationYear: MBook.PublicationYear}
+	query := dto.BookQueryParams{Title: MBook.Title, Edition: MBook.Edition, PublicationYear: MBook.PublicationYear}
 
 	repository := repositories.NewBookRepository(gormDB)
 	book, err := repository.GetBookByQuery(query.AsQuery())
@@ -298,7 +298,7 @@ func TestGetBookByQueryReturnGenericError(t *testing.T) {
 		db.Close()
 	}()
 
-	query := dto.BookQueryParam{
+	query := dto.BookQueryParams{
 		Title:           "the Rust Programming Language",
 		Edition:         1,
 		PublicationYear: 2018,
