@@ -25,9 +25,7 @@ func BookRoutes(eng *gin.Engine) {
 	bookGroup := eng.Group("/books")
 	{
 		bookGroup.POST("/", controller.Create)
-		bookGroup.GET("/", controller.GetBooksByQuery)
-		bookGroup.GET("/:id", controller.GetBookByID)
-		bookGroup.GET("/:authorID", controller.GetBookByAuthorID)
+		bookGroup.GET("/", controller.GetBooks)
 		bookGroup.PUT("/:id", controller.UpdateBook)
 		bookGroup.DELETE("/:id", controller.DeleteBook)
 	}
