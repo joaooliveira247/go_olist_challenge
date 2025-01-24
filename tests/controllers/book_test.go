@@ -501,7 +501,7 @@ func TestGetBooksAllSuccess(t *testing.T) {
 	c.Request, _ = http.NewRequest(http.MethodGet, "/books/", nil)
 	c.Request.Header.Set("Content-Type", "application/json")
 
-	controller.GetBooksByQuery(c)
+	controller.GetBooks(c)
 
 	byteMbooks, _ := json.Marshal(Mbooks)
 
