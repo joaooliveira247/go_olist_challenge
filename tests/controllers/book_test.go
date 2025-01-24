@@ -389,6 +389,33 @@ func TestGetBooksQueryBookIDSuccess(t *testing.T) {
 
 }
 
+func TestGetBooksQueryAuhthorIDSuccess(t *testing.T) {
+	mockBookRepository := new(mocks.BookRepository)
+	mockBookAuthorRepository := new(mocks.BookAuthorRepository)
+
+	authorID := uuid.New()
+	mbook := mocks.NewMockBooks()[:2]
+
+	mockBookRepository.On("GetBooksByAuthorID", authorID).Return(mbook, nil)
+
+	controller := controllers.NewBookController(mockBookRepository, mockBookAuthorRepository)
+
+	w := httptest.NewRecorder()
+	gin.SetMode(gin.TestMode)
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request, _ = http.NewRequest(http.MethodGet, fmt.Sprintf("/books/?authorID=%s", authorID.String()), nil)
+	c.Request.Header.Set("Content-Type", "application/json")
+
+	controller.GetBooks(c)
+
+	bjson, _ := json.Marshal(mbook)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.JSONEq(t, string(bjson), w.Body.String())
+
+}
+
 func TestBookGetByQueryReturnAllSucess(t *testing.T) {
 	mockBookRepository := new(mocks.BookRepository)
 	mockBookAuthorRepository := new(mocks.BookAuthorRepository)
