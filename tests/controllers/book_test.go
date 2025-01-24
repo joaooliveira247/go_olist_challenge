@@ -416,6 +416,74 @@ func TestGetBooksQueryAuhthorIDSuccess(t *testing.T) {
 
 }
 
+func TestGetBooksManyQueriesSuccess(t *testing.T) {
+	mockBookAuthorRepository := new(mocks.BookAuthorRepository)
+	mockBookRepository := new(mocks.BookRepository)
+
+	Mbooks := mocks.NewMockBooks()
+
+	testCases := []struct {
+		name       string
+		url        string
+		query      string
+		mockResult []models.BookOut
+	}{
+		{
+			"Title Param Return Two Books",
+			"/books/?title=Python Fluente",
+			"b.title = Python Fluente",
+			Mbooks[:2],
+		},
+		{
+			"Edition Param Return Two Books",
+			"/books/?edition=1",
+			"b.edition = 1",
+			[]models.BookOut{Mbooks[1], Mbooks[3]},
+		},
+		{
+			"publicationYear Param Return Two Books",
+			"/books/?publicationYear=2015",
+			"b.publication_year = 2015",
+			[]models.BookOut{Mbooks[1], Mbooks[2]},
+		},
+		{
+			"Edition and PublicatioYear Return One Book",
+			"/books/?edition=2&publicationYear=2015",
+			"b.edition = 2 AND b.publication_year = 2015",
+			[]models.BookOut{Mbooks[1]},
+		},
+		{
+			"Title, Edition and PublicationYear Return One Book",
+			"/books/?title=The Go Programming Language&edition=2&publicationYear=2015",
+			"b.title = The Go Programming Language AND b.edition = 2 AND b.publication_year = 2015",
+			[]models.BookOut{Mbooks[1]},
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			mockBookRepository.ExpectedCalls = nil
+			mockBookRepository.On("GetBookByQuery", testCase.query).Return(testCase.mockResult, nil)
+
+			controller := controllers.NewBookController(mockBookRepository, mockBookAuthorRepository)
+
+			w := httptest.NewRecorder()
+			gin.SetMode(gin.TestMode)
+
+			c, _ := gin.CreateTestContext(w)
+			c.Request, _ = http.NewRequest(http.MethodGet, testCase.url, nil)
+			c.Request.Header.Set("Content-Type", "application/json")
+
+			controller.GetBooksByQuery(c)
+
+			byteMbooks, _ := json.Marshal(testCase.mockResult)
+
+			assert.Equal(t, http.StatusOK, w.Code)
+			assert.JSONEq(t, string(byteMbooks), w.Body.String())
+		})
+	}
+}
+
 func TestBookGetByQueryReturnAllSucess(t *testing.T) {
 	mockBookRepository := new(mocks.BookRepository)
 	mockBookAuthorRepository := new(mocks.BookAuthorRepository)
