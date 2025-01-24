@@ -363,6 +363,32 @@ func TestGetBooksReturnUnableFetchEntity(t *testing.T) {
 	}
 }
 
+func TestGetBooksQueryBookIDSuccess(t *testing.T) {
+	mockBookRepository := new(mocks.BookRepository)
+	mockBookAuthorRepository := new(mocks.BookAuthorRepository)
+
+	mbook := mocks.NewMockBookOut()
+
+	mockBookRepository.On("GetBookByID", mbook.ID).Return(mbook, nil)
+
+	controller := controllers.NewBookController(mockBookRepository, mockBookAuthorRepository)
+
+	w := httptest.NewRecorder()
+	gin.SetMode(gin.TestMode)
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request, _ = http.NewRequest(http.MethodGet, fmt.Sprintf("/books/?bookID=%s", mbook.ID.String()), nil)
+	c.Request.Header.Set("Content-Type", "application/json")
+
+	controller.GetBooks(c)
+
+	bjson, _ := json.Marshal(mbook)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.JSONEq(t, string(bjson), w.Body.String())
+
+}
+
 func TestBookGetByQueryReturnAllSucess(t *testing.T) {
 	mockBookRepository := new(mocks.BookRepository)
 	mockBookAuthorRepository := new(mocks.BookAuthorRepository)
