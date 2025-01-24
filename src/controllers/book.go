@@ -50,8 +50,73 @@ func (controller *BookController) Create(ctx *gin.Context) {
 	return
 }
 
+func (controller *BookController) GetBooks(ctx *gin.Context) {
+	var bookQuery dto.BookQueryParams
+
+	if err := ctx.ShouldBindQuery(&bookQuery); err != nil {
+		ctx.JSON(response.InvalidParam.StatusCode, response.InvalidParam.Message)
+		return
+	}
+
+	if bookQuery.BookID != "" {
+		bookID, err := uuid.Parse(bookQuery.BookID)
+
+		if err != nil || bookID == uuid.Nil {
+			ctx.JSON(response.InvalidID.StatusCode, response.InvalidID.Message)
+			return
+		}
+
+		book, err := controller.bookRepository.GetBookByID(bookID)
+
+		if err != nil {
+			ctx.JSON(response.UnableFetchEntity.StatusCode, response.UnableFetchEntity.Message)
+			return
+		}
+		ctx.JSON(http.StatusOK, book)
+		return
+	}
+
+	if bookQuery.AuthorID != "" {
+		authorID, err := uuid.Parse(bookQuery.AuthorID)
+
+		if err != nil || authorID == uuid.Nil {
+			ctx.JSON(response.InvalidID.StatusCode, response.InvalidID.Message)
+			return
+		}
+
+		books, err := controller.bookRepository.GetBooksByAuthorID(authorID)
+
+		if err != nil {
+			ctx.JSON(response.UnableFetchEntity.StatusCode, response.UnableFetchEntity.Message)
+			return
+		}
+		ctx.JSON(http.StatusOK, books)
+		return
+	}
+
+	if !bookQuery.IsEmpty() {
+		books, err := controller.bookRepository.GetBookByQuery(bookQuery.AsQuery())
+
+		if err != nil {
+			ctx.JSON(response.UnableFetchEntity.StatusCode, response.UnableFetchEntity.Message)
+			return
+		}
+		ctx.JSON(http.StatusOK, books)
+		return
+	}
+
+	books, err := controller.bookRepository.GetAll()
+
+	if err != nil {
+		ctx.JSON(response.UnableFetchEntity.StatusCode, response.UnableFetchEntity.Message)
+		return
+	}
+	ctx.JSON(http.StatusOK, books)
+	return
+}
+
 func (controller *BookController) GetBooksByQuery(ctx *gin.Context) {
-	var bookQuery dto.BookQueryParam
+	var bookQuery dto.BookQueryParams
 
 	if err := ctx.ShouldBindQuery(&bookQuery); err != nil {
 		ctx.JSON(response.InvalidParam.StatusCode, response.InvalidParam.Message)
