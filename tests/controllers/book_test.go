@@ -342,7 +342,6 @@ func TestGetBooksReturnUnableFetchEntity(t *testing.T) {
 		},
 	}
 
-	// use mockanything as param
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
 			mockBookRepository.Calls = nil
