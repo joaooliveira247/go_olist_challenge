@@ -484,6 +484,31 @@ func TestGetBooksManyQueriesSuccess(t *testing.T) {
 	}
 }
 
+func TestGetBooksAllSuccess(t *testing.T) {
+	mockBookRepository := new(mocks.BookRepository)
+	mockBookAuthorRepository := new(mocks.BookAuthorRepository)
+
+	Mbooks := mocks.NewMockBooks()
+
+	mockBookRepository.On("GetAll").Return(Mbooks, nil)
+
+	controller := controllers.NewBookController(mockBookRepository, mockBookAuthorRepository)
+
+	w := httptest.NewRecorder()
+	gin.SetMode(gin.TestMode)
+
+	c, _ := gin.CreateTestContext(w)
+	c.Request, _ = http.NewRequest(http.MethodGet, "/books/", nil)
+	c.Request.Header.Set("Content-Type", "application/json")
+
+	controller.GetBooksByQuery(c)
+
+	byteMbooks, _ := json.Marshal(Mbooks)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	assert.JSONEq(t, string(byteMbooks), w.Body.String())
+}
+
 func TestBookGetByQueryReturnAllSucess(t *testing.T) {
 	mockBookRepository := new(mocks.BookRepository)
 	mockBookAuthorRepository := new(mocks.BookAuthorRepository)
