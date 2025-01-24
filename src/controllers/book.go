@@ -115,37 +115,6 @@ func (controller *BookController) GetBooks(ctx *gin.Context) {
 	return
 }
 
-func (controller *BookController) GetBooksByQuery(ctx *gin.Context) {
-	var bookQuery dto.BookQueryParams
-
-	if err := ctx.ShouldBindQuery(&bookQuery); err != nil {
-		ctx.JSON(response.InvalidParam.StatusCode, response.InvalidParam.Message)
-		return
-	}
-
-	queries := bookQuery.AsQuery()
-
-	if !bookQuery.IsEmpty() {
-		books, err := controller.bookRepository.GetBookByQuery(queries)
-		if err != nil {
-			ctx.JSON(response.UnableFetchEntity.StatusCode, response.UnableFetchEntity.Message)
-			return
-		}
-		ctx.JSON(http.StatusOK, books)
-		return
-	}
-
-	books, err := controller.bookRepository.GetAll()
-
-	if err != nil {
-		ctx.JSON(response.UnableFetchEntity.StatusCode, response.UnableFetchEntity.Message)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, books)
-	return
-}
-
 func (controller *BookController) GetBookByID(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Param("id"))
 
