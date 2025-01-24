@@ -254,7 +254,7 @@ func TestGetBookByOneQuerySuccess(t *testing.T) {
 		rows.AddRow(book.ID, book.Title, book.Edition, book.PublicationYear, book.AuthorsName)
 	}
 
-	mock.ExpectQuery(regexp.QuoteMeta(`SELECT b.id, b.title, b.edition, b.publication_year, array_agg(a.name) AS authors FROM book_author ba INNER JOIN books b ON ba.book_id = b.id INNER JOIN authors a ON ba.author_id = a.id WHERE b.title = Python Fluente GROUP BY b.id;`)).WillReturnRows(rows)
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT b.id, b.title, b.edition, b.publication_year, array_agg(a.name) AS authors FROM book_author ba INNER JOIN books b ON ba.book_id = b.id INNER JOIN authors a ON ba.author_id = a.id WHERE b.title = 'Python Fluente' GROUP BY b.id;`)).WillReturnRows(rows)
 
 	query := dto.BookQueryParams{Title: "Python Fluente"}
 
@@ -278,7 +278,7 @@ func TestGetBookByQuerySuccess(t *testing.T) {
 
 	rows := sqlmock.NewRows([]string{"id", "title", "edition", "publication_year", "authors"}).AddRow(MBook.ID, MBook.Title, MBook.Edition, MBook.PublicationYear, MBook.AuthorsName)
 
-	mock.ExpectQuery(regexp.QuoteMeta(`SELECT b.id, b.title, b.edition, b.publication_year, array_agg(a.name) AS authors FROM book_author ba INNER JOIN books b ON ba.book_id = b.id INNER JOIN authors a ON ba.author_id = a.id WHERE b.title = the Rust Programming Language AND b.edition = 1 AND b.publication_year = 2018 GROUP BY b.id;`)).WillReturnRows(rows)
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT b.id, b.title, b.edition, b.publication_year, array_agg(a.name) AS authors FROM book_author ba INNER JOIN books b ON ba.book_id = b.id INNER JOIN authors a ON ba.author_id = a.id WHERE b.title = 'the Rust Programming Language' AND b.edition = 1 AND b.publication_year = 2018 GROUP BY b.id;`)).WillReturnRows(rows)
 
 	query := dto.BookQueryParams{Title: MBook.Title, Edition: MBook.Edition, PublicationYear: MBook.PublicationYear}
 
@@ -304,7 +304,7 @@ func TestGetBookByQueryReturnGenericError(t *testing.T) {
 		PublicationYear: 2018,
 	}
 
-	mock.ExpectQuery(regexp.QuoteMeta(fmt.Sprintf(`SELECT b.id, b.title, b.edition, b.publication_year, array_agg(a.name) AS authors FROM book_author ba INNER JOIN books b ON ba.book_id = b.id INNER JOIN authors a ON ba.author_id = a.id WHERE b.title = the Rust Programming Language AND b.edition = 1 AND b.publication_year = 2018 GROUP BY b.id;`))).WillReturnError(&errors.BookGenericError)
+	mock.ExpectQuery(regexp.QuoteMeta(fmt.Sprintf(`SELECT b.id, b.title, b.edition, b.publication_year, array_agg(a.name) AS authors FROM book_author ba INNER JOIN books b ON ba.book_id = b.id INNER JOIN authors a ON ba.author_id = a.id WHERE b.title = 'the Rust Programming Language' AND b.edition = 1 AND b.publication_year = 2018 GROUP BY b.id;`))).WillReturnError(&errors.BookGenericError)
 
 	repository := repositories.NewBookRepository(gormDB)
 	book, err := repository.GetBookByQuery(query.AsQuery())
