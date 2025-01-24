@@ -115,25 +115,6 @@ func (controller *BookController) GetBooks(ctx *gin.Context) {
 	return
 }
 
-func (controller *BookController) GetBookByID(ctx *gin.Context) {
-	id, err := uuid.Parse(ctx.Param("id"))
-
-	if err != nil || id == uuid.Nil {
-		ctx.JSON(response.InvalidID.StatusCode, response.InvalidID.Message)
-		return
-	}
-
-	book, err := controller.bookRepository.GetBookByID(id)
-
-	if err != nil {
-		ctx.JSON(response.UnableFetchEntity.StatusCode, response.UnableFetchEntity.Message)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, book)
-	return
-}
-
 func (controller *BookController) GetBookByAuthorID(ctx *gin.Context) {
 	id, err := uuid.Parse(ctx.Query("authorID"))
 
