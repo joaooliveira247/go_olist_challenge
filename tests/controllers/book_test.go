@@ -431,7 +431,7 @@ func TestGetBooksManyQueriesSuccess(t *testing.T) {
 		{
 			"Title Param Return Two Books",
 			"/books/?title=Python Fluente",
-			"b.title = Python Fluente",
+			"b.title = 'Python Fluente'",
 			Mbooks[:2],
 		},
 		{
@@ -455,7 +455,7 @@ func TestGetBooksManyQueriesSuccess(t *testing.T) {
 		{
 			"Title, Edition and PublicationYear Return One Book",
 			"/books/?title=The Go Programming Language&edition=2&publicationYear=2015",
-			"b.title = The Go Programming Language AND b.edition = 2 AND b.publication_year = 2015",
+			"b.title = 'The Go Programming Language' AND b.edition = 2 AND b.publication_year = 2015",
 			[]models.BookOut{Mbooks[1]},
 		},
 	}
