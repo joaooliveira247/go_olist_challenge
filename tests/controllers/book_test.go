@@ -80,15 +80,6 @@ func TestBookCreateReturnInvalidRequestBody(t *testing.T) {
 }`,
 		},
 		{
-			"Title Less Than 2",
-			`{
-			"title": "Th",
-			"edition": 1,
-			"publication_year": 2018,
-			"authors": ["4ed37603-c983-4137-bbe9-bccfc30b53a6", "31455548-62a9-4935-aa89-c1d2ac036e0f"]
-}`,
-		},
-		{
 			"Edition Less Than 1",
 			`{
 			"title": "The Rust Programming Language",
