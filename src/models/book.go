@@ -9,7 +9,7 @@ import (
 
 type Book struct {
 	ID              uuid.UUID `json:"id" gorm:"primaryKey;type:uuid;default:gen_random_uuid()"`
-	Title           string    `json:"title" binding:"required,gt=2" gorm:"type:varchar(255);not null;column:title"`
+	Title           string    `json:"title" binding:"required,gt=1" gorm:"type:varchar(255);not null;column:title"`
 	Edition         uint8     `json:"edition" binding:"required,gt=0" gorm:"type:smallint;column:edition"`
 	PublicationYear uint      `json:"publication_year" binding:"required,gt=0" gorm:"type:smallint;column:publication_year"`
 }
