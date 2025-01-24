@@ -22,7 +22,7 @@ func (query *BookQueryParams) AsQuery() string {
 	whereClauses := []string{}
 
 	if query.Title != "" {
-		whereClauses = append(whereClauses, fmt.Sprintf(`b.title = %s`, query.Title))
+		whereClauses = append(whereClauses, fmt.Sprintf(`b.title = '%s'`, query.Title))
 	}
 	if query.Edition != 0 {
 		whereClauses = append(whereClauses, fmt.Sprintf(`b.edition = %d`, query.Edition))
