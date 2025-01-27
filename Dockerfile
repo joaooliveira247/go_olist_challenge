@@ -4,7 +4,7 @@ WORKDIR /app
 
 RUN go install github.com/air-verse/air@latest
 
-COPY ./
+COPY go.mod go.sum ./
 RUN go mod download
 
 RUN go run main.go db create
