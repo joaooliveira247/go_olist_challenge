@@ -12,6 +12,16 @@ services:
       - book_store_backend
     ports:
       - 5432:5432
+  book_api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - book_store_backend
+    ports:
+      - 8000:8000
+    volumes:
+      - ./:/app
 
 networks:
   book_store_backend:
