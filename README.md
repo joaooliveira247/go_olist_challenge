@@ -9,11 +9,29 @@
 
 ### [`Docker`](https://www.docker.com/) & [`Docker compose`](https://docs.docker.com/compose/)
 
-- Installation:
+- Installation & Running:
 
+    - `Docker`:
 
+        `docker compose up -d`
 
-- Running
+            Starts all services, including the API and Database.
+
+        `make db create CONTAINER_ID=<container_id>`
+
+            Create all tables in database.
+
+        `make db delete CONTAINER_ID=<container_id>`
+
+            Delete all tables in database.
+
+        `make import CSV_PATH=<csv_path> CONTAINER_ID=<container_id>`
+
+              Imports an authors CSV file into the database. Ensure the CSV file includes headers.
+
+        > **NOTE:**
+        >
+        > To find the container_id, run `docker ps`
 
 ## 📜 Documentation:
 
