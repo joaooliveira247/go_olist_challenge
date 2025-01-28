@@ -15,21 +15,29 @@
 
     <summary><code>Docker</code></summary>
 
-        `docker compose up -d`
+    - Starts all services, including the API and Database.
 
-            Starts all services, including the API and Database.
+        ```bash
+        docker compose up -d
+        ```
 
-        `make db create CONTAINER_ID=<container_id>`
+    - Create all tables in database.
 
-            Create all tables in database.
+        ```bash
+        make db create CONTAINER_ID=<container_id>
+        ```
 
-        `make db delete CONTAINER_ID=<container_id>`
+    - Delete all tables in database.
 
-            Delete all tables in database.
+        ```bash
+        make db delete CONTAINER_ID=<container_id>
+        ```
 
-        `make import CSV_PATH=<csv_path> CONTAINER_ID=<container_id>`
+    - Imports an authors CSV file into the database. Ensure the CSV file includes headers.
 
-              Imports an authors CSV file into the database. Ensure the CSV file includes headers.
+        ```bash
+        make import CSV_PATH=<csv_path> CONTAINER_ID=<container_id>
+        ```
 
         > **NOTE:**
         >
