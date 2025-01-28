@@ -11,7 +11,9 @@
 
 - Installation & Running:
 
-    - `Docker`:
+    <details>
+
+    <summary><code>Docker</code></summary>
 
         `docker compose up -d`
 
@@ -32,6 +34,8 @@
         > **NOTE:**
         >
         > To find the container_id, run `docker ps`
+    
+    </details>
 
 ## 📜 Documentation:
 
