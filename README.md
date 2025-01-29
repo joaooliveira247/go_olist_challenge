@@ -82,5 +82,45 @@
 
 ## 📜 Documentation:
 
+<details>
+    <summary><code>/authors/</code></summary>
+
+<code>POST /authors/</code>
+
+- Description: Creates a new author.
+
+- Headers:
+
+    ```plaintext
+    Content-Type: application/json
+
+    ```
+
+- Request Body:
+
+    ```json
+    {
+        "name": "Stephen King"
+    }
+    ```
+
+- Success Response (201 Created):
+
+    ```json
+    {
+         "id": "1d47bbe5-c7d3-4580-ad2a-c4b192eeeb47"
+    }
+    ```
+
+- Errors:
+
+    - **422 Unprocessable Entity**: Invalid request body.
+
+    - **409 Conflict**: Author already exists.
+
+    - **500 Internal Server Error**: Failed to create the entity.
+
+</details>
+
 ## 📦 Usage libraries:
 
