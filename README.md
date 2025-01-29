@@ -87,16 +87,16 @@
 
 <code>POST /authors/</code>
 
-- Description: Creates a new author.
+- **Description**: Creates a new author.
 
-- Headers:
+- **Headers**:
 
     ```plaintext
     Content-Type: application/json
 
     ```
 
-- Request Body:
+- **Request Body**:
 
     ```json
     {
@@ -104,7 +104,7 @@
     }
     ```
 
-- Success Response (201 Created):
+- **Success Response (201 Created)**:
 
     ```json
     {
@@ -112,13 +112,21 @@
     }
     ```
 
-- Errors:
+- **Errors**:
 
     - **422 Unprocessable Entity**: Invalid request body.
 
     - **409 Conflict**: Author already exists.
 
     - **500 Internal Server Error**: Failed to create the entity.
+
+- **Example Request with cURL**:
+
+```curl
+curl -X GET http://localhost:8000/authors/ \
+  -H "Content-Type: application/json"
+
+```
 
 </details>
 
