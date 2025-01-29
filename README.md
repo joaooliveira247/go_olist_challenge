@@ -218,6 +218,41 @@ curl -X POST localhost:8000/authors/ \
         -H "Content-Type: application/json"
         ```
 
+<code>DELETE /authors/{id}</code>
+
+- **Description**: Deletes an author by ID.
+
+- **Headers**:
+
+    ```plaintext
+    Content-Type: application/json
+    ```
+
+- **Path Parameter**:
+
+**id** (string, required): UUID of the author to be deleted.
+
+- **Success Response (204 No Content)**:
+
+```json
+(empty response body)
+```
+
+- **Errors**:
+
+    - **400 Bad Request**: Invalid author ID.
+
+    - **404 Not Found**: Author not found.
+
+    - **500 Internal Server Error**: Unable to delete the entity.
+
+- **Example Request with cURL**:
+
+```bash
+curl -X DELETE localhost:8000/authors/1d47bbe5-c7d3-4580-ad2a-c4b192eeeb47 \
+  -H "Content-Type: application/json"
+```
+
 </details>
 
 ## 📦 Usage libraries:
