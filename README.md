@@ -45,6 +45,41 @@
     
     </details>
 
+    <details>
+    <summary><code>Local</code></summary>
+
+    - Install all packages.
+
+        ```bash
+        go mod tidy
+        ```
+
+    - Run API.
+
+        ```bash
+        air run
+        ```
+
+    - Create all tables.
+
+        ```bash
+        go run main.go db create
+        ```
+
+    - Delete all tables.
+
+        ```bash
+        go run main.go db delete
+        ```
+
+    - Imports an authors CSV file into the database.
+
+        ```bash
+        go run main.go <path_csv> --header <true|false>
+        ```
+
+    </details>
+
 ## 📜 Documentation:
 
 ## 📦 Usage libraries:
