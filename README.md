@@ -123,9 +123,11 @@
 - **Example Request with cURL**:
 
 ```curl
-curl -X GET http://localhost:8000/authors/ \
-  -H "Content-Type: application/json"
-
+curl -X POST localhost:8000/authors/ \
+-H "Content-Type: application/json" \
+-d '{
+    "name": "Stephen King"
+}'
 ```
 
 </details>
