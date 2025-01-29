@@ -130,6 +130,94 @@ curl -X POST localhost:8000/authors/ \
 }'
 ```
 
+<code>GET /authors/</code>
+
+- **Description**: Retrieves authors based on query parameters. If no parameters are provided, it returns all authors.
+
+- **Headers**:
+
+    ```plaintext    
+    Content-Type: application/json
+    ```
+
+- **Query Parameters**:
+
+    **authorID** (string, optional): UUID of the author.
+
+    **name** (string, optional): Name of the author.
+
+- **Success Responses (200 OK)**:
+
+    - Single Author by ID.
+
+        ```json
+        {
+            "id":   "1d47bbe5-c7d3-4580-ad2a-c4b192eeeb47",
+            "name": "Stephen King"
+        }
+        ```
+
+    - Multiple Authors by Name
+
+        ```json
+        [
+            {
+                "id": "1d47bbe5-c7d3-4580-ad2a-c4b192eeeb47",
+                "name": "Stephen King"
+            },
+            {
+                "id": "2a8c2dde-24b3-4c21-9fbb-d7dfd09f98e5",
+                "name": "Stephen Hawking"
+            }
+        ]
+        ```
+
+    - All Authors
+
+        ```json
+        [
+            {
+                "id": "1d47bbe5-c7d3-4580-ad2a-c4b192eeeb47",
+                "name": "Stephen King"
+            },
+            {
+                "id": "2a8c2dde-24b3-4c21-9fbb-d7dfd09f98e5",
+                "name": "J.K. Rowling"
+            }
+        ]
+        ```
+
+- **Errors**:
+
+    - **400 Bad Request**: Invalid query parameters or invalid ID.
+
+    - **404 Not Found**: Author not found.
+
+    - **500 Internal Server Error**: Unable to fetch entity.
+
+- **Example Requests with cURL**:
+
+    - Get All Authors
+
+        ```bash
+        curl -X GET localhost:8000/authors/ \
+        -H "Content-Type: application/json"
+        ```
+
+    - Get Author by ID
+
+        ```bash
+        curl -X GET "localhost:8000/authors/?authorID=1d47bbe5-c7d3-4580-ad2a-c4b192eeeb47" \
+        -H "Content-Type: application/json"
+        ```
+
+    - Get Authors by Name
+
+        ```bash
+        curl -X GET "localhost:8000/authors/?name=Stephen" \
+        -H "Content-Type: application/json"
+        ```
+
 </details>
 
 ## 📦 Usage libraries:
