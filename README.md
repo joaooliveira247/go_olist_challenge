@@ -255,5 +255,9 @@ curl -X DELETE localhost:8000/authors/1d47bbe5-c7d3-4580-ad2a-c4b192eeeb47 \
 
 </details>
 
+<details>
+<summary><code>/books/</code></summary>
+</details>
+
 ## 📦 Usage libraries:
 
