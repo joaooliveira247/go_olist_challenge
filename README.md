@@ -475,5 +475,35 @@ curl -X POST localhost:8000/authors/ \
 
 </details>
 
+<details>
+<summary><code>DELETE /books/{id}</code></summary>
+
+- **Description**: Deletes a book by its ID.
+
+- **Path Parameter**:
+
+    **id** (UUID, required): The unique identifier of the book to delete.
+
+- **Success Response (204 No Content)**:
+
+```json
+(empty response body)
+```
+- Errors:
+
+    - **400 Bad Request**: Invalid ID format.
+
+    - **304 Not Modified**: Book not found (nothing to delete).
+
+    - **500 Internal Server Error**: Unable to fetch or delete the entity.
+
+- **Example Request with cURL**:
+
+```bash
+curl -X DELETE "localhost:8000/books/3f8c3bde-54a6-41d7-bb4f-8d74a33e8e12"
+```
+
+</details>
+
 ## 📦 Usage libraries:
 
