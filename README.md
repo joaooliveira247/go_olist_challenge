@@ -17,11 +17,6 @@
 
     - Starts all services, including the API and Database.
 
-        ```bash
-        docker compose up -d
-        ```
-
-    - Create all tables in database.
 
         ```bash
         make db create CONTAINER_ID=<container_id>
@@ -82,7 +77,6 @@
 
 ## 📜 Documentation:
 
-// change, put details in routes.
 
 <code>/authors/</code>
 
@@ -149,6 +143,8 @@ curl -X POST localhost:8000/authors/ \
     **authorID** (string, optional): UUID of the author.
 
     **name** (string, optional): Name of the author.
+
+
 
 - **Success Responses (200 OK)**:
 
@@ -263,7 +259,62 @@ curl -X POST localhost:8000/authors/ \
 
 ###
 
-<code>/books/</code></summary>
+<code>/books/</code>
+
+<details>
+<summary><code>POST /books/</code></summary>
+
+- **Description**: Creates a new book with its associated authors.
+
+- **Headers**:
+
+    ```plaintext
+    Content-Type: application/json
+    ```
+
+- **Request Body**:
+
+    ```json
+    {
+        "title": "The Shining",
+        "edition": 1,
+        "published_year": 1977,
+        "authors_id": [
+            "1d47bbe5-c7d3-4580-ad2a-c4b192eeeb47"
+        ]
+    }
+    ```
+
+- **Success Response (201 Created)**:
+
+    ```json
+    {
+        "id": "3f8c3bde-54a6-41d7-bb4f-8d74a33e8e12"
+    }
+    ```
+
+- **Errors**:
+
+    - **422 Unprocessable Entity**: Invalid request body.
+
+    - **500 Internal Server Error**: Failed to create the entity.
+
+- **Example Request with cURL**:
+
+    ```bash
+    curl -X POST localhost:8000/books/ \
+    -H "Content-Type: application/json" \
+    -d '{
+        "title": "The Shining",
+        "edition": 1,
+        "published_year": 1977,
+        "authors_id": [
+        "1d47bbe5-c7d3-4580-ad2a-c4b192eeeb47"
+        ]
+    }'
+    ```
+
+</details>
 
 
 ## 📦 Usage libraries:
