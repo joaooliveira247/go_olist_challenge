@@ -316,6 +316,91 @@ curl -X POST localhost:8000/authors/ \
 
 </details>
 
+<details>
+<summary><code>GET /books/</code></summary>
+
+- **Description**: Retrieves a list of books. Supports filtering by book ID, author ID, title, edition, and publication year.
+
+- **Headers**:
+
+    ```plaintext
+    Content-Type: application/json
+    ```
+
+- **Query Parameters**:
+
+    **bookID** (optional, UUID): Filters books by their unique ID.
+
+    **authorID** (optional, UUID): Filters books by the author's unique ID.
+
+    **title** (optional, string): Filters books by title (case-insensitive).
+
+    **edition** (optional, uint8): Filters books by edition number.
+
+    **publicationYear** (optional, uint): Filters books by publication year.
+
+    **title, edition, and publicationYear** can be used together for a more precise query.
+
+- **Success Response (200 OK)**:
+
+    ```json
+    [
+        {
+            "id": "3f8c3bde-54a6-41d7-bb4f-8d74a33e8e12",
+            "title": "The Shining",
+            "edition": 1,
+            "publicationYear": 1977,
+            "authors": [
+                    "name": "Stephen King"
+            ]
+        }
+    ]
+    ```
+
+- **Errors**:
+
+    - **400 Bad Request**: Invalid query parameter.
+
+    - **400 Bad Request**: Invalid ID format.
+
+    - **500 Internal Server Error**: Failed to fetch the entity.
+
+- **Example Requests with cURL**:
+
+    - **Get all books**:
+        ```bash
+        curl -X GET "localhost:8000/books/" -H "Content-Type: application/json"
+        ```
+
+    - **Get a book by ID**:
+        ```bash
+        curl -X GET "localhost:8000/books/?bookID=3f8c3bde-54a6-41d7-bb4f-8d74a33e8e12" \
+        -H "Content-Type: application/json"
+        ```
+
+    - **Get books by author ID**:
+
+        ```bash
+        curl -X GET "localhost:8000/books/?authorID=1d47bbe5-c7d3-4580-ad2a-c4b192eeeb47" \
+        -H "Content-Type: application/json"
+        ```
+
+    - **Get books by title**:
+
+        ```bash
+        curl -X GET "localhost:8000/books/?title=The%20Shining" \
+        -H "Content-Type: application/json"
+        ```
+
+    - **Get books by title, edition, and publication year**:
+
+        ```bash
+        curl -X GET "localhost:8000/books/?title=The%20Shining&edition=1&publicationYear=1977" \
+        -H "Content-Type: application/json"
+        ```
+
+</details>
+
 
 ## 📦 Usage libraries:
 
