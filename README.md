@@ -401,6 +401,79 @@ curl -X POST localhost:8000/authors/ \
 
 </details>
 
+<details>
+<summary><code>PUT /books/{id}</code></summary>
+
+- **Description**: Updates an existing book by its ID. Allows modifying book details and authors.
+
+- **Headers**:
+
+    ```plaintext
+    Content-Type: application/json
+    ```
+
+- **Path Parameter**:
+
+    **id** (UUID, required): The unique identifier of the book to update.
+
+- **Request Body** (partial or full update allowed):
+
+    ```json
+    {
+        "title": "Updated Title",
+        "edition": 2,
+        "publicationYear": 2024,
+        "authorsID": [
+            "1d47bbe5-c7d3-4580-ad2a-c4b192eeeb47",
+            "9a6c112e-fc2e-49d3-b930-7991a20903db"
+        ]
+    }
+    ```
+
+- **Success Response (204 No Content)**:
+
+```json
+(empty response body)
+```
+
+- **Errors**:
+
+    - **400 Bad Request**: Invalid ID format.
+
+    - **422 Unprocessable Entity**: Invalid request body.
+
+    - **304 Not Modified**: Nothing to update.
+
+    - **500 Internal Server Error**: Failed to fetch or update the entity.
+
+- **Example Requests with cURL**:
+
+    - **Update book details**:
+
+        ```bash
+        curl -X PUT "localhost:8000/books/3f8c3bde-54a6-41d7-bb4f-8d74a33e8e12" \
+        -H "Content-Type: application/json" \
+        -d '{
+            "title": "Updated Title",
+            "edition": 2,
+            "publicationYear": 2024
+        }'
+        ```
+
+    - **Update book authors**:
+
+        ```bash
+        curl -X PUT "localhost:8000/books/3f8c3bde-54a6-41d7-bb4f-8d74a33e8e12" \
+        -H "Content-Type: application/json" \
+        -d '{
+            "authorsID": [
+            "1d47bbe5-c7d3-4580-ad2a-c4b192eeeb47",
+            "9a6c112e-fc2e-49d3-b930-7991a20903db"
+            ]
+        }'
+        ```
+
+</details>
 
 ## 📦 Usage libraries:
 
