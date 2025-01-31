@@ -82,10 +82,12 @@
 
 ## 📜 Documentation:
 
-<details>
-    <summary><code>/authors/</code></summary>
+// change, put details in routes.
 
-<code>POST /authors/</code>
+<code>/authors/</code>
+
+<details>
+<summary><code>POST /authors/</code></summary>
 
 - **Description**: Creates a new author.
 
@@ -129,8 +131,10 @@ curl -X POST localhost:8000/authors/ \
     "name": "Stephen King"
 }'
 ```
+</details>
 
-<code>GET /authors/</code>
+<details>
+<summary><code>GET /authors/</code></summary>
 
 - **Description**: Retrieves authors based on query parameters. If no parameters are provided, it returns all authors.
 
@@ -218,7 +222,10 @@ curl -X POST localhost:8000/authors/ \
         -H "Content-Type: application/json"
         ```
 
-<code>DELETE /authors/{id}</code>
+</details>
+
+<details>
+<summary><code>DELETE /authors/{id}</code></summary>
 
 - **Description**: Deletes an author by ID.
 
@@ -230,13 +237,13 @@ curl -X POST localhost:8000/authors/ \
 
 - **Path Parameter**:
 
-**id** (string, required): UUID of the author to be deleted.
+    **id** (string, required): UUID of the author to be deleted.
 
 - **Success Response (204 No Content)**:
 
-```json
-(empty response body)
-```
+    ```json
+    (empty response body)
+    ```
 
 - **Errors**:
 
@@ -248,16 +255,16 @@ curl -X POST localhost:8000/authors/ \
 
 - **Example Request with cURL**:
 
-```bash
-curl -X DELETE localhost:8000/authors/1d47bbe5-c7d3-4580-ad2a-c4b192eeeb47 \
-  -H "Content-Type: application/json"
-```
-
+    ```bash
+    curl -X DELETE localhost:8000/authors/1d47bbe5-c7d3-4580-ad2a-c4b192eeeb47 \
+    -H "Content-Type: application/json"
+    ```
 </details>
 
-<details>
-<summary><code>/books/</code></summary>
-</details>
+###
+
+<code>/books/</code></summary>
+
 
 ## 📦 Usage libraries:
 
