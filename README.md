@@ -507,3 +507,22 @@ curl -X DELETE "localhost:8000/books/3f8c3bde-54a6-41d7-bb4f-8d74a33e8e12"
 
 ## 📦 Usage libraries:
 
+- [gin](github.com/gin-gonic/gin)
+
+- [gorm](https://gorm.io/)
+
+- [gorm/postgres](https://github.com/go-gorm/postgres)
+
+- [uuid](github.com/google/uuid)
+
+- [urfave/cli](github.com/urfave/cli/v3)
+
+- [godotenv](github.com/joho/godotenv)
+
+- [pq](github.com/lib/pq)
+
+- [testfy](github.com/stretchr/testify)
+
+- [sql-mock](github.com/DATA-DOG/go-sqlmock)
+
+- [mockery](github.com/vektra/mockery)
