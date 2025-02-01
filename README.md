@@ -505,6 +505,13 @@ curl -X DELETE "localhost:8000/books/3f8c3bde-54a6-41d7-bb4f-8d74a33e8e12"
 
 </details>
 
+###
+
+<details>
+<summary><code>SQL Diagram</code></summary>
+<img src="https://i.imgur.com/oU1kGlG.png">
+</details>
+
 ## 📦 Usage libraries:
 
 - [gin](github.com/gin-gonic/gin)
